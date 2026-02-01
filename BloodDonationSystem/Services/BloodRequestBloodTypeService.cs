@@ -16,13 +16,11 @@ namespace BloodDonationSystem.Services
 
         public async Task<List<BloodRequestBloodType>> GetAllBloodRequestBloodTypeAsync()
         {
-            // Simple SELECT * FROM BloodRequestBloodTypes
             return await _context.BloodRequestBloodTypes.ToListAsync();
         }
 
         public async Task<BloodRequestBloodType> GetBloodRequestBloodTypeByIdAsync(int id)
         {
-            // FindAsync is the most efficient for primary key lookups
 
             return await _context.BloodRequestBloodTypes.FindAsync(id);
         }
@@ -39,7 +37,9 @@ namespace BloodDonationSystem.Services
             var existingBloodRequestBloodType = await _context.BloodRequestBloodTypes.FindAsync(id);
             if (existingBloodRequestBloodType == null) return null;
 
-            existingBloodRequestBloodType.Id = BloodRequestBloodType.Id;
+            existingBloodRequestBloodType.BloodTypeId = BloodRequestBloodType.BloodTypeId;
+            existingBloodRequestBloodType.BloodRequestId = BloodRequestBloodType.BloodRequestId;
+
 
             await _context.SaveChangesAsync();
             return existingBloodRequestBloodType;

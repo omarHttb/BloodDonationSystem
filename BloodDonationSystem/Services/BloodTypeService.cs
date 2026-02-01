@@ -36,7 +36,8 @@ namespace BloodDonationSystem.Services
             var existingBloodType = await _context.BloodType.FindAsync(id);
             if (existingBloodType == null) return null;
 
-            existingBloodType.Id = BloodType.Id;
+            existingBloodType.BloodTypeName = BloodType.BloodTypeName;
+
 
             await _context.SaveChangesAsync();
             return existingBloodType;
@@ -44,10 +45,10 @@ namespace BloodDonationSystem.Services
 
         public async Task<bool> DeleteBloodTypeAsync(int id)
         {
-            var BloodType = await _context.BloodTypes.FindAsync(id);
+            var BloodType = await _context.BloodType.FindAsync(id);
             if (BloodType == null) return false;
 
-            _context.BloodTypes.Remove(BloodType);
+            _context.BloodType.Remove(BloodType);
             await _context.SaveChangesAsync();
             return true;
         }

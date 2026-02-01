@@ -36,7 +36,9 @@ namespace BloodDonationSystem.Services
             var existingDonor = await _context.Donors.FindAsync(id);
             if (existingDonor == null) return null;
 
-            existingDonor.Id = Donor.Id;
+            existingDonor.UserId = Donor.UserId;
+            existingDonor.BloodTypeId = Donor.BloodTypeId;
+
 
             await _context.SaveChangesAsync();
             return existingDonor;

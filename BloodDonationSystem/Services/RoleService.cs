@@ -16,13 +16,11 @@ namespace BloodDonationSystem.Services
 
         public async Task<List<Role>> GetAllRoleAsync()
         {
-            // Simple SELECT * FROM Roles
             return await _context.Roles.ToListAsync();
         }
 
         public async Task<Role> GetRoleByIdAsync(int id)
         {
-            // FindAsync is the most efficient for primary key lookups
             return await _context.Roles.FindAsync(id);
         }
 
@@ -38,7 +36,7 @@ namespace BloodDonationSystem.Services
             var existingRole = await _context.Roles.FindAsync(id);
             if (existingRole == null) return null;
 
-            existingRole.Id = Role.Id;
+            existingRole.RoleName = Role.RoleName;
             await _context.SaveChangesAsync();
             return existingRole;
         }

@@ -37,10 +37,7 @@ namespace BloodDonationSystem.Services
             var existingStatus = await _context.Status.FindAsync(id);
             if (existingStatus == null) return null;
 
-            // Updating properties manually
-            existingStatus.Id = Status.Id;
-            // Map any other properties from your Status model here
-            // existingStatus.Name = Status.Name; 
+            existingStatus.StatusName = Status.StatusName;
 
             await _context.SaveChangesAsync();
             return existingStatus;
@@ -48,10 +45,10 @@ namespace BloodDonationSystem.Services
 
         public async Task<bool> DeleteStatusAsync(int id)
         {
-            var Status = await _context.Statuss.FindAsync(id);
+            var Status = await _context.Status.FindAsync(id);
             if (Status == null) return false;
 
-            _context.Statuss.Remove(Status);
+            _context.Status.Remove(Status);
             await _context.SaveChangesAsync();
             return true;
         }

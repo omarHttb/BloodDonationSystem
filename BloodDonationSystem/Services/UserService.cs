@@ -38,10 +38,8 @@ namespace BloodDonationSystem.Services
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null) return null;
 
-            // Updating properties manually
-            existingUser.Id = User.Id;
-            // Map any other properties from your User model here
-            // existingUser.Name = User.Name; 
+            existingUser.password = User.password;
+            existingUser.Name = User.Name;
 
             await _context.SaveChangesAsync();
             return existingUser;

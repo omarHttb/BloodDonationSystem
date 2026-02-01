@@ -1,4 +1,7 @@
 using BloodDonationSystem.Data;
+using BloodDonationSystem.Models;
+using BloodDonationSystem.Services;
+using BloodDonationSystem.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//services
+builder.Services.AddScoped<IBloodRequestBloodTypeService,BloodRequestBloodTypeService>();
+builder.Services.AddScoped<IBloodRequestService, BloodRequestService>();
+builder.Services.AddScoped<IBloodTypeService,BloodTypeService>();
+builder.Services.AddScoped<IDonationService,DonationService>();
+builder.Services.AddScoped<IDonorService,DonorService>();
+builder.Services.AddScoped<IRoleService,RoleService>();
+builder.Services.AddScoped<IStatusService,StatusService>();
+builder.Services.AddScoped<IUserRoleService,UserRoleService>();
+builder.Services.AddScoped<IUserService,UserService>();
 
 
 var app = builder.Build();

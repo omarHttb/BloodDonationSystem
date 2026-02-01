@@ -38,10 +38,8 @@ namespace BloodDonationSystem.Services
             var existingUserRole = await _context.UserRoles.FindAsync(id);
             if (existingUserRole == null) return null;
 
-            // Updating properties manually
-            existingUserRole.Id = UserRole.Id;
-            // Map any other properties from your UserRole model here
-            // existingUserRole.Name = UserRole.Name; 
+            existingUserRole.UserId = UserRole.UserId;
+            existingUserRole.RoleId = UserRole.RoleId;
 
             await _context.SaveChangesAsync();
             return existingUserRole;

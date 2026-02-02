@@ -54,5 +54,17 @@ namespace BloodDonationSystem.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public Task<int> TotalNumberOfDonors()
+        {
+            return _context.Donors.CountAsync();    
+        }
+
+        public Task<int> TotalBloodAvailableByType(int bloodTypeId)
+        {
+            return _context.Donors
+                .Where(d => d.BloodTypeId == bloodTypeId && d.IsAvailable)
+                .CountAsync();
+        }
     }
 }

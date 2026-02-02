@@ -10,5 +10,8 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<Donation> CreateDonationAsync(Donation donation);
         Task<Donation> UpdateDonationAsync(int id, Donation donation);
         Task<bool> DeleteDonationAsync(int id);
+
+        Task<int> TotalNumberOfDonations();
+
     }
 }

@@ -56,5 +56,10 @@ namespace BloodDonationSystem.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public Task<int> TotalNumberOfDonations()
+        {
+           return _context.Donations.CountAsync();
+        }
     }
 }

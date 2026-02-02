@@ -102,3 +102,36 @@ label{
         transform: translateY(0);
         background-color: #0ea5e9;
     }
+
+/* 1. The Container: A responsive grid */
+.AdminMenu {
+    display: grid;
+    /* This magic line makes columns wrap automatically based on screen size */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px; /* Space between cards */
+    padding: 20px 0;
+}
+
+/* 2. The Cards: White boxes with shadow */
+.AdminMenuCard {
+    background-color: #ffffff;
+    border-radius: 12px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Very subtle shadow */
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #444;
+    cursor: pointer; /* Shows the hand icon on hover */
+    /* Smooth animation for hover effects */
+    transition: all 0.3s ease;
+    /* Optional: A red accent line for the "Blood Donation" theme */
+    border-top: 4px solid #e74c3c;
+}
+
+    /* 3. Interaction: Lift up when hovered */
+    .AdminMenuCard:hover {
+        transform: translateY(-5px); /* Move up slightly */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Shadow gets deeper */
+        background-color: #fcfcfc;
+    }

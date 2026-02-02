@@ -10,5 +10,6 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<BloodRequestBloodType> CreateBloodRequestBloodTypeAsync(BloodRequestBloodType bloodRequestBloodType);
         Task<BloodRequestBloodType> UpdateBloodRequestBloodTypeAsync(int id, BloodRequestBloodType bloodRequestBloodType);
         Task<bool> DeleteBloodRequestBloodTypeAsync(int id);
+
     }
 }

@@ -19,4 +19,86 @@ html {
 
 body {
   margin-bottom: 60px;
+
 }
+
+label{
+    font-size:1.2rem;
+    font-weight:600;
+}
+
+.MainArea {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    min-height: 80vh; 
+}
+
+.LoginContainer {
+    display: flex;
+    flex-direction:column;
+    padding:40px;
+    width: 410px;
+    height: 450px;
+    border-radius: 15px;
+    color: #f8fafc; 
+    border: 1px solid #334155;
+    background: #1e293b;
+}
+
+.login-input {
+    width: 100%; 
+    padding: 12px 15px; 
+    margin: 10px 0; 
+    display: inline-block;
+    border: 1px solid #334155;
+    border-radius: 6px; 
+    background-color: #0f172a; 
+    color: #ffffff; 
+    font-size: 16px;
+    box-sizing: border-box; 
+    transition: 0.3s; 
+    outline: none; 
+}
+
+
+    /* Changes border color when you click into it */
+    .login-input:focus {
+        border-color: #38bdf8;
+        box-shadow: 0 0 5px rgba(56, 189, 248, 0.5);
+    }
+
+    /* Styles the placeholder text color */
+    .login-input::placeholder {
+        color: #94a3b8;
+        opacity: 0.7;
+    }
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #38bdf8; /* Bright blue */
+    color: #0f172a; /* Dark text for high contrast */
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth hover transition */
+    text-transform: uppercase; /* Optional: makes it look more formal */
+    letter-spacing: 1px;
+}
+
+    /* Hover effect: makes the blue slightly lighter and moves the button up 1px */
+    .login-btn:hover {
+        background-color: #7dd3fc;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Active effect: gives feedback when the button is clicked */
+    .login-btn:active {
+        transform: translateY(0);
+        background-color: #0ea5e9;
+    }

@@ -1,0 +1,26 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Register";
+    ViewData["HideNav"] = true;
+
+}
+@model BloodDonationSystem.Models.User
+
+<form asp-controller="Account" asp-action="RegisterAccount" method="post">
+<div class="LoginContainer" style="height:550px">
+    <h3 class="d-flex justify-content-center  w-100">Register</h3>
+    <label>Username</label>
+    <input type="text" name="Name" class="login-input" placeholder="Username" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    <label>Password</label>
+        <input type="password" name="Password" class="login-input" placeholder="Password" />
+    <label>Confirm password</label>
+        <input type="password" class="login-input" name="ConfirmPassword" placeholder="Confirm password    " />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    <button type="submit" class="login-btn">
+        Register
+    </button>
+</div>
+</form>

@@ -11,5 +11,7 @@
         public int BloodRequestId { get; set; }
 
         public BloodRequest BloodRequest { get; set; }
+
+        public int Quantity { get; set; }
     }
 }

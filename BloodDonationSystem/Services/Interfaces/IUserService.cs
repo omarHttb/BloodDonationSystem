@@ -7,8 +7,10 @@ namespace BloodDonationSystem.Services.Interfaces
     {
         Task<User> GetUserByIdAsync(int id);
         Task<List<User>> GetAllUserAsync();
-        Task<User> CreateUserAsync(User user);
+        Task<int> RegisterUserAsync(User user);
         Task<User> UpdateUserAsync(int id, User user);
         Task<bool> DeleteUserAsync(int id);
+
+        Task<bool> LoginUser(User user);
     }
 }

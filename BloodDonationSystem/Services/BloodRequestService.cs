@@ -40,6 +40,7 @@ namespace BloodDonationSystem.Services
             existingBloodRequest.isApproved = BloodRequest.isApproved;
             existingBloodRequest.IsActive = BloodRequest.IsActive;
 
+
             await _context.SaveChangesAsync();
             return existingBloodRequest;
         }

@@ -10,6 +10,8 @@
 
         public int BloodTypeId { get; set; }
 
+        public bool IsAvailable { get; set; }
+
         public BloodType BloodType { get; set; }
 
         public ICollection<Donation> Donations { get; set; }

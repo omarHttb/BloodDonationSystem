@@ -39,6 +39,7 @@ namespace BloodDonationSystem.Services
 
             existingBloodRequestBloodType.BloodTypeId = BloodRequestBloodType.BloodTypeId;
             existingBloodRequestBloodType.BloodRequestId = BloodRequestBloodType.BloodRequestId;
+            existingBloodRequestBloodType.Quantity = BloodRequestBloodType.Quantity;
 
 
             await _context.SaveChangesAsync();

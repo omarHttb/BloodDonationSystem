@@ -10,6 +10,8 @@
 
         public bool IsActive { get; set; }
 
+        
+
         public ICollection<Donation> Donations { get; set; }
 
         public ICollection<BloodRequestBloodType> bloodRequestBloodTypes { get; set; }

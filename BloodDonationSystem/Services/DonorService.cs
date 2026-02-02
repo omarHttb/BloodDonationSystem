@@ -38,6 +38,7 @@ namespace BloodDonationSystem.Services
 
             existingDonor.UserId = Donor.UserId;
             existingDonor.BloodTypeId = Donor.BloodTypeId;
+            existingDonor.IsAvailable = Donor.IsAvailable;
 
 
             await _context.SaveChangesAsync();

@@ -1,0 +1,66 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<BloodRequest>
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Blood Request Approvals";
+
+}
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Blood Request Date</th>
+            <th>Is Active</th>
+            <th>Is Approved</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.Id</td>
+                <td>@request.BloodRequestDate</td>
+                <td>
+                    @request.IsActive
+                </td>
+                <td>
+                    @request.isApproved
+                </td>
+                <td>
+                    @if (@request.isApproved == false)
+                    {
+                        <form asp-controller="Admin"
+                              asp-action="Approve"
+                              asp-route-id="@request.Id"
+                              method="post"
+                              style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                Approve
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Admin"
+                              asp-action="Reject"
+                              asp-route-id="@request.Id"
+                              method="post"
+                              style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                Reject
+                            </button>
+                        </form>
+                    }
+
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>

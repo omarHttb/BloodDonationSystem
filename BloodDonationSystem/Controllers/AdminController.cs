@@ -1,4 +1,5 @@
-﻿using BloodDonationSystem.Services.Interfaces;
+﻿using BloodDonationSystem.Models;
+using BloodDonationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloodDonationSystem.Controllers
@@ -7,15 +8,18 @@ namespace BloodDonationSystem.Controllers
     {
         private readonly IUserService _userService;
         private readonly IBloodTypeService _bloodTypeService;
-        public AdminController(IUserService userService , IBloodTypeService bloodTypeService)
+        private readonly IBloodRequestService _bloodRequestService;
+        public AdminController(IUserService userService , IBloodTypeService bloodTypeService, IBloodRequestService bloodRequestService)
         {
             _bloodTypeService = bloodTypeService;
             _userService = userService;
+            _bloodRequestService = bloodRequestService;
         }
         public IActionResult Admin()
         {
             return View();
         }
+
 
 
 
@@ -31,6 +35,15 @@ namespace BloodDonationSystem.Controllers
             return View();
         }
 
+        public async Task<IActionResult> BloodRequestApprovals()
+        {
+            var bloodRequests = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
+
+
+            return View("BloodRequestsApprovals",bloodRequests);
+        }
+
+
         public IActionResult Reports()
         {
             return View();
@@ -41,6 +54,33 @@ namespace BloodDonationSystem.Controllers
             var userList = await _userService.GetAllUsersWithDetailsAsync();
 
             return View(userList);
+        }
+
+        [HttpPost]
+        
+        public async Task<IActionResult> Approve(int id)
+        {
+            var success = await _bloodRequestService.ApproveBloodRequest(id);
+
+            if (!success) return NotFound();
+
+            var bloodRequests = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
+
+
+            return View("BloodRequestsApprovals", bloodRequests);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Reject(int id)
+        {
+            var success = await _bloodRequestService.DisApproveBloodRequest(id);
+
+            if (!success) return NotFound();
+
+
+            var bloodRequests = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
+
+            return View("BloodRequestsApprovals", bloodRequests);
         }
     }
 }

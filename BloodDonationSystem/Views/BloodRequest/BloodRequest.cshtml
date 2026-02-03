@@ -43,6 +43,9 @@
     <br />
 <br />
 
+
+<span>Important Note: To make a request active an admin must approve it</span>
+<br/>
 <div class="w-100">
 <table class="table table-striped">
     <thead>
@@ -53,6 +56,7 @@
             <th>Request Date</th>
             <th>Is active</th>
             <th>Is Approved</th>
+            <th>Approve</th>
         </tr>
     </thead>
     <tbody>
@@ -75,6 +79,18 @@
                     <td>
                         @BloodRequest.IsBloodRequestApproved
                     </td>
+                    <td>
+                        @if (!BloodRequest.IsBloodRequestApproved){
+                                    @if (BloodRequest.IsBloodRequestActive)
+                                    {
+                                    <a class="btn btn-sm btn-primary" >Deactivate</a>
+                                    }
+                                    else
+                                    {
+                                    <a class="btn btn-sm btn-primary">Activate</a>                           
+                                    }
+                                }
+                    </td>
                 </tr>
             }
         }
@@ -82,3 +98,5 @@
 </table>
 </div>
 </div>
+
+

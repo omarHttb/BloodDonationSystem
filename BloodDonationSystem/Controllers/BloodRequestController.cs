@@ -23,7 +23,7 @@ namespace BloodDonationSystem.Controllers
         {
             var allBloodTypes = await _bloodTypeService.GetAllBloodTypeAsync();
 
-            List<BloodRequest> allBloodRequests = await _bloodRequestService.GetAllBloodRequestAsync();
+            List<BloodRequest> allBloodRequests = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
 
             var bloodRequestsAndBloodTypes = new CreateBloodRequestDTO();
 
@@ -58,7 +58,7 @@ namespace BloodDonationSystem.Controllers
         {
             var allBloodTypes = await _bloodTypeService.GetAllBloodTypeAsync();
 
-            var AllBloodRequests = await _bloodRequestService.GetAllBloodRequestAsync();
+            var AllBloodRequests = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
 
             var bloodRequestsAndBloodTypes = new CreateBloodRequestDTO();
 

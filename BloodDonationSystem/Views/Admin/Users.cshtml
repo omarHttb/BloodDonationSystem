@@ -1,0 +1,40 @@
+﻿@using BloodDonationSystem.DTOS
+@model List<UserListViewDTO>
+@{
+    Layout = "_AdminLayout";
+}
+
+<h2>All Users</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Blood Type</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        if(Model != null){
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Username</td>
+                <td>
+                    <span class="badge bg-danger">@user.BloodType</span>
+                </td>
+                @foreach (var roles in user.Roles)
+                {
+                    <td>@roles&nbsp;</td>
+                }
+                   <td>
+                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                </td>
+            </tr>
+        }
+        }
+    </tbody>
+</table>

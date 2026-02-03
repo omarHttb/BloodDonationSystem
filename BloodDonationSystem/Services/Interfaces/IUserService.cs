@@ -1,3 +1,4 @@
+using BloodDonationSystem.DTOS;
 using BloodDonationSystem.Models;
 
 namespace BloodDonationSystem.Services.Interfaces
@@ -10,7 +11,8 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<int> RegisterUserAsync(User user);
         Task<User> UpdateUserAsync(int id, User user);
         Task<bool> DeleteUserAsync(int id);
-
+        
         Task<bool> LoginUser(User user);
+        Task<List<UserListViewDTO>> GetAllUsersWithDetailsAsync();
     }
 }

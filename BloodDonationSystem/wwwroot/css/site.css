@@ -30,7 +30,6 @@ label{
 .MainArea {
     display: flex;
     justify-content: center; 
-    align-items: center; 
     min-height: 80vh; 
 }
 
@@ -105,11 +104,11 @@ label{
 
 /* 1. The Container: A responsive grid */
 .AdminMenu {
-    display: grid;
-    /* This magic line makes columns wrap automatically based on screen size */
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px; /* Space between cards */
-    padding: 20px 0;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 50px;
+    
 }
 
 /* 2. The Cards: White boxes with shadow */
@@ -121,6 +120,7 @@ label{
     text-align: center;
     font-size: 1.1rem;
     font-weight: 600;
+    width: 300px;
     color: #444;
     cursor: pointer; /* Shows the hand icon on hover */
     /* Smooth animation for hover effects */
@@ -135,3 +135,9 @@ label{
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Shadow gets deeper */
         background-color: #fcfcfc;
     }
+
+.AdminPage {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}

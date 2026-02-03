@@ -1,0 +1,16 @@
+@{
+    Layout = "_Layout";
+}
+<div class="AdminPage">
+<div class="AdminMenu">
+    <a asp-controller="Admin" asp-action="Users" class="AdminMenuCard">All Users</a>
+    <a asp-controller="Admin" asp-action="BloodTypes" class="AdminMenuCard">Blood Types</a>
+    <a asp-controller="Admin" asp-action="DonationApprovals" class="AdminMenuCard">Donations Management</a>
+    <a asp-controller="Admin" asp-action="Reports" class="AdminMenuCard">Reports</a>
+</div>
+
+<div class="container">
+    @RenderBody()
+</div>
+
+</div>

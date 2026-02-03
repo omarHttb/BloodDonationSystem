@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using BloodDonationSystem.Models;
 using BloodDonationSystem.Data;
 using BloodDonationSystem.Services.Interfaces;
+using BloodDonationSystem.DTOS;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BloodDonationSystem.Services
 {
@@ -81,10 +83,13 @@ namespace BloodDonationSystem.Services
             var DbUser = await _context.Users
                 .SingleOrDefaultAsync(u => u.Name == user.Name);
 
-            if (user.Name == null)
+            if (DbUser == null)
             {
                 return false;
             }
+
+            if (user.password.IsNullOrEmpty())
+                return false;
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(user.password, DbUser.password);
 
@@ -94,5 +99,28 @@ namespace BloodDonationSystem.Services
             }
             return true;
         }
+
+        public async Task<List<UserListViewDTO>> GetAllUsersWithDetailsAsync()
+        {
+            var users = await _context.Users
+                .Select(u => new UserListViewDTO
+                {
+                    Id = u.Id,
+                    Username = u.Name,
+
+                    BloodType = (u.Donors != null && u.Donors.BloodType != null)
+                                ? u.Donors.BloodType.BloodTypeName
+                                : "N/A",
+
+                    Roles = u.UserRoles
+                        .Select(ur => ur.Role.RoleName)
+                        .ToList()
+                })
+                .ToListAsync();
+
+            return users;
+        }
+
+
     }
 }

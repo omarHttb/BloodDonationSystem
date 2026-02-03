@@ -16,7 +16,10 @@ namespace BloodDonationSystem.Services
 
         public async Task<List<BloodRequest>> GetAllBloodRequestAsync()
         {
-            return await _context.BloodRequests.ToListAsync();
+            return await _context.BloodRequests
+                    .Include(br => br.bloodRequestBloodTypes)      // Pulls the link table
+                        .ThenInclude(bbt => bbt.BloodType)        // Pulls the actual Type (A+, O+, etc)
+                    .ToListAsync();
         }
 
         public async Task<BloodRequest> GetBloodRequestByIdAsync(int id)

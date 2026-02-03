@@ -1,9 +1,30 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model List<BloodType>
 @{
+
     Layout = "_AdminLayout";
     ViewData["Title"] = "Blood Types";
 }
 <h2>Blood Types</h2>
-<p>Manage blood types here.</p>
+<table class="table table-striped" style="width:auto">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Blood Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var bloodType in Model)
+            {
+                <tr>
+                    <td>@bloodType.Id</td>
+                    <td>@bloodType.BloodTypeName</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

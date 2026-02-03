@@ -21,15 +21,14 @@ namespace BloodDonationSystem.Services
 
         public async Task<BloodRequestBloodType> GetBloodRequestBloodTypeByIdAsync(int id)
         {
-
             return await _context.BloodRequestBloodTypes.FindAsync(id);
         }
 
-        public async Task<BloodRequestBloodType> CreateBloodRequestBloodTypeAsync(BloodRequestBloodType BloodRequestBloodType)
+        public async Task<bool> CreateBloodRequestBloodTypeAsync(BloodRequestBloodType bloodRequestBloodType)
         {
-            _context.BloodRequestBloodTypes.Add(BloodRequestBloodType);
+            await _context.BloodRequestBloodTypes.AddAsync(bloodRequestBloodType);
             await _context.SaveChangesAsync();
-            return BloodRequestBloodType;
+            return true;
         }
 
         public async Task<BloodRequestBloodType> UpdateBloodRequestBloodTypeAsync(int id, BloodRequestBloodType BloodRequestBloodType)

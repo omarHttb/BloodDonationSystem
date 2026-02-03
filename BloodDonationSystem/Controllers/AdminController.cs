@@ -6,8 +6,10 @@ namespace BloodDonationSystem.Controllers
     public class AdminController : Controller
     {
         private readonly IUserService _userService;
-        public AdminController(IUserService userService)
+        private readonly IBloodTypeService _bloodTypeService;
+        public AdminController(IUserService userService , IBloodTypeService bloodTypeService)
         {
+            _bloodTypeService = bloodTypeService;
             _userService = userService;
         }
         public IActionResult Admin()
@@ -17,12 +19,14 @@ namespace BloodDonationSystem.Controllers
 
 
 
-        public IActionResult BloodTypes()
+        public async Task<IActionResult> BloodTypes()
         {
-            return View();
+            var bloodtypes = await _bloodTypeService.GetAllBloodTypeAsync();    
+
+            return View(bloodtypes);
         }
 
-        public IActionResult DonationApprovals()
+        public async Task<IActionResult> DonationApprovals()
         {
             return View();
         }

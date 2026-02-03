@@ -35,12 +35,12 @@ label{
 
 .LoginContainer {
     display: flex;
-    flex-direction:column;
-    padding:40px;
+    flex-direction: column;
+    padding: 40px;
     width: 410px;
     height: 450px;
     border-radius: 15px;
-    color: #f8fafc; 
+    color: #f8fafc;
     border: 1px solid #334155;
     background: #1e293b;
 }
@@ -140,4 +140,26 @@ label{
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+
+.MainArea.Login-style {
+    align-content: center;
+    align-items: center;
+    min-height: 90vh;
+}
+
+.bloodTypesRequest{
+    border: 1px solid black;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 3rem
+    
+
+}
+.BloodRequestStyle{
+   margin:auto;
+   width :60%;
+   display:flex;
+   flex-direction:column
 }

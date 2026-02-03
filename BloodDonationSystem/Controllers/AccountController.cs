@@ -36,6 +36,7 @@ namespace BloodDonationSystem.Controllers
             return View("Login");
         }
 
+        [HttpPost]
         public IActionResult RegisterAccount(User user) 
         {
             var result = _userService.RegisterUserAsync(user).Result;

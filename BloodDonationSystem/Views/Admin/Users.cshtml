@@ -1,6 +1,7 @@
 ﻿@using BloodDonationSystem.DTOS
 @model List<UserListViewDTO>
 @{
+    ViewData["Title"] = "Users";
     Layout = "_AdminLayout";
 }
 
@@ -17,7 +18,7 @@
         </tr>
     </thead>
     <tbody>
-        if(Model != null){
+        @if(Model != null){
         @foreach (var user in Model)
         {
             <tr>

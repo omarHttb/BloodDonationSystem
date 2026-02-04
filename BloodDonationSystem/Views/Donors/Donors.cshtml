@@ -1,0 +1,44 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using BloodDonationSystem.DTOS
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model DonorsAndBloodTypesDTO
+
+<h1>Donors Management</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Donor Name</th>
+            <th>Donor Blood Type</th>
+            <th>Assign Blood Type</th>
+        </tr>
+    </thead>
+<tbody>
+    @foreach (var donor in Model.Donors)
+    {
+        <tr>
+            <td>@donor.DonorId</td>
+            <td>@donor.DonorName</td>
+            <td>@(donor.BloodType ?? "Not Assigned")</td>
+            <td>
+                <form asp-action="UpdateBloodType" method="post">
+                    <input type="hidden" name="DonorId" value="@donor.DonorId" />
+                    
+                    <select name="BloodTypeId"
+                            asp-items="@(Model.bloodTypes.Select(bt => new SelectListItem { 
+                                Value = bt.Id.ToString(), 
+                                Text = bt.BloodTypeName 
+                            }))"
+                            onchange="this.form.submit()"
+                            class="form-control">
+                        <option value="">-- Assign --</option>
+                    </select>
+                </form>
+            </td>
+        </tr>
+    }
+</tbody>
+</table>

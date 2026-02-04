@@ -78,26 +78,26 @@ namespace BloodDonationSystem.Services
             return true;
         }
 
-        public async Task<bool> LoginUser(User user)
+        public async Task<int> LoginUser(User user)
         {
             var DbUser = await _context.Users
                 .SingleOrDefaultAsync(u => u.Name == user.Name);
 
             if (DbUser == null)
             {
-                return false;
+                return -1;
             }
 
             if (user.password.IsNullOrEmpty())
-                return false;
+                return -1;
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(user.password, DbUser.password);
 
             if(!isPasswordValid)
             {
-                return false;
+                return -1;
             }
-            return true;
+            return DbUser.Id;
         }
 
         public async Task<List<UserListViewDTO>> GetAllUsersWithDetailsAsync()

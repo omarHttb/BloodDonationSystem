@@ -8,7 +8,7 @@
         
         public User User { get; set; }
 
-        public int BloodTypeId { get; set; }
+        public int? BloodTypeId { get; set; }
 
         public bool IsAvailable { get; set; }
 

@@ -22,6 +22,12 @@ builder.Services.AddScoped<IStatusService,StatusService>();
 builder.Services.AddScoped<IUserRoleService,UserRoleService>();
 builder.Services.AddScoped<IUserService,UserService>();
 
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", config =>
+    {
+        config.Cookie.Name = "UserLoginCookie";
+        config.LoginPath = "/Login/Index"; // Where to go if not logged in
+    });
 
 var app = builder.Build();
 
@@ -42,6 +48,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();

@@ -1,6 +1,8 @@
 ﻿using BloodDonationSystem.Models;
 using BloodDonationSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BloodDonationSystem.Controllers
 {
@@ -24,15 +26,27 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult UserLogin(User user)
+        public async Task<IActionResult> UserLogin(User user)
         {
-            var result = _userService.LoginUser(user).Result;
-            if (result == true)
+            int loggedInUserId = await _userService.LoginUser(user);
+
+            if (loggedInUserId != -1) 
             {
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Name),
+            new Claim("UserID", loggedInUserId.ToString())
+        };
+
+                var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
+                var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+                await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity), authProperties);
+
                 return RedirectToAction("Index", "Home");
             }
-            ModelState.AddModelError("password", "Invalid username or password.");
 
+            ModelState.AddModelError("", "Invalid login attempt.");
             return View("Login");
         }
 

@@ -20,9 +20,6 @@ namespace BloodDonationSystem.Controllers
             return View();
         }
 
-
-
-
         public async Task<IActionResult> BloodTypes()
         {
             var bloodtypes = await _bloodTypeService.GetAllBloodTypeAsync();    

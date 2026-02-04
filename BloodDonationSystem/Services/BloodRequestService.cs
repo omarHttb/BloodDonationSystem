@@ -66,17 +66,13 @@ namespace BloodDonationSystem.Services
 
         public async Task<bool> ApproveBloodRequest(int id)
         {
-            // 1. Attach only the ID to the context (don't even load the whole row yet)
 
             var request = await _context.BloodRequests.FindAsync(id);
             if (request == null) return false;
 
-            // 2. Only mark the specific properties as "Modified"
             request.isApproved = true;
             request.IsActive = false;
 
-            // EF will now generate: UPDATE BloodRequests SET isApproved = 1, IsActive = 0 WHERE Id = @id
-            // It will NOT touch the other columns.
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -89,6 +85,29 @@ namespace BloodDonationSystem.Services
             request.IsActive = false;
 
             // ❌ DO NOT call Update()
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> ActivateBloodRequest(int id)
+        {
+            var request = await _context.BloodRequests.FindAsync(id);
+            if (request == null) return false;
+
+            request.IsActive = true;
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeActivateBloodRequest(int id)
+        {
+            var request = await _context.BloodRequests.FindAsync(id);
+            if (request == null) return false;
+
+
+            request.IsActive = false;
+
             await _context.SaveChangesAsync();
 
             return true;

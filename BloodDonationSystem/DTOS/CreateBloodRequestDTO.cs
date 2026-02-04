@@ -5,7 +5,7 @@
         // The list of checkboxes
         public List<BloodTypeSelectionDTO> BloodTypes { get; set; }
 
-        public List<BloodRequestsDTO> BloodRequests { get; set; }
+        public IEnumerable<BloodRequestsDTO> BloodRequests { get; set; }
     
     }
 }

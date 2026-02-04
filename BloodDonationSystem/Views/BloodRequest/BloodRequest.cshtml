@@ -56,7 +56,7 @@
             <th>Request Date</th>
             <th>Is active</th>
             <th>Is Approved</th>
-            <th>Approve</th>
+            <th>Activate</th>
         </tr>
     </thead>
     <tbody>
@@ -80,17 +80,37 @@
                         @BloodRequest.IsBloodRequestApproved
                     </td>
                     <td>
-                        @if (!BloodRequest.IsBloodRequestApproved){
-                                    @if (BloodRequest.IsBloodRequestActive)
+                        @if (BloodRequest.IsBloodRequestApproved){
+                                    @if (!BloodRequest.IsBloodRequestActive)
                                     {
-                                    <a class="btn btn-sm btn-primary" >Deactivate</a>
+                                        <form asp-controller="BloodRequest"
+                                              asp-action="Activate"
+                                              asp-route-id="@BloodRequest.Id"
+                                              method="post"
+                                              style="display:inline">
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                Activate
+                                            </button>
+                                        </form>
                                     }
                                     else
                                     {
-                                    <a class="btn btn-sm btn-primary">Activate</a>                           
+                                        <form asp-controller="BloodRequest"
+                                              asp-action="DeActivate"
+                                              asp-route-id="@BloodRequest.Id"
+                                              method="post"
+                                              style="display:inline">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                DeActivate
+                                            </button>
+                                        </form>
                                     }
                                 }
-                    </td>
+                                else
+                                {
+                                    <p>To Activate Request it must <br /> be approved by Admin</p>
+                                }
+                            </td>
                 </tr>
             }
         }

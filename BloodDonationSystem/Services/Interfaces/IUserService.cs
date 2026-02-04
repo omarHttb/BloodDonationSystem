@@ -12,7 +12,7 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<User> UpdateUserAsync(int id, User user);
         Task<bool> DeleteUserAsync(int id);
         
-        Task<bool> LoginUser(User user);
+        Task<int> LoginUser(User user);
         Task<List<UserListViewDTO>> GetAllUsersWithDetailsAsync();
     }
 }

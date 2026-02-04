@@ -14,5 +14,8 @@ namespace BloodDonationSystem.Services.Interfaces
 
         Task<bool> ApproveBloodRequest(int id);
         Task<bool> DisApproveBloodRequest(int id);
+
+        Task<bool> ActivateBloodRequest(int id);
+        Task<bool> DeActivateBloodRequest(int id);
     }
 }

@@ -1,3 +1,4 @@
+using BloodDonationSystem.DTOS;
 using BloodDonationSystem.Models;
 
 namespace BloodDonationSystem.Services.Interfaces
@@ -5,6 +6,11 @@ namespace BloodDonationSystem.Services.Interfaces
 {
     public interface IDonorService 
     {
+
+        Task<Donor> GetDonorByUserIdAsync(int userId);
+
+        Task<bool> UpdateDonorBloodType(int donorId, int bloodTypeId);
+        Task <DonorsAndBloodTypesDTO> GetDonorManagementData();
         Task<Donor> GetDonorByIdAsync(int id);
         Task<List<Donor>> GetAllDonorAsync();
         Task<Donor> CreateDonorAsync(Donor donor);

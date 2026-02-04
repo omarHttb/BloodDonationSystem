@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using BloodDonationSystem.Models;
 using BloodDonationSystem.Data;
 using BloodDonationSystem.Services.Interfaces;
+using BloodDonationSystem.DTOS;
 
 namespace BloodDonationSystem.Services
 {
@@ -65,6 +66,53 @@ namespace BloodDonationSystem.Services
             return _context.Donors
                 .Where(d => d.BloodTypeId == bloodTypeId && d.IsAvailable)
                 .CountAsync();
+        }
+
+        public Task<Donor> GetDonorByUserIdAsync(int userId)
+        {
+            var Donor = _context.Donors
+                .FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if(Donor == null)
+            {
+                return null;
+            }
+
+            return Donor;
+        }
+
+        public async Task<DonorsAndBloodTypesDTO> GetDonorManagementData()
+        {
+            // 1. Get all donors (fast, single query)
+            var donorList = await _context.Donors
+                .Include(d => d.User)
+                .Include(d => d.BloodType)
+                .Select(d => new DonorDTO
+                {
+                    DonorId = d.Id,
+                    DonorName = d.User.Name,
+                    BloodType = d.BloodType.BloodTypeName,
+                    // DO NOT fetch the whole bloodTypes list here
+                })
+                .ToListAsync();
+
+            // 2. Get all blood types (fast, single query)
+            var bloodTypeList = await _context.BloodType.ToListAsync();
+
+            // 3. Combine them into your wrapper DTO
+            return new DonorsAndBloodTypesDTO
+            {
+                Donors = donorList,
+                bloodTypes = bloodTypeList
+            };
+        }
+
+        public Task<bool> UpdateDonorBloodType(int donorId, int bloodTypeId)
+        {
+            _context.Donors
+                .Where(d => d.Id == donorId)
+                .ExecuteUpdateAsync(d => d.SetProperty(donor => donor.BloodTypeId, bloodTypeId));
+            return Task.FromResult(true);
         }
     }
 }

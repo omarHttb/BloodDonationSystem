@@ -6,6 +6,7 @@ namespace BloodDonationSystem.DTOS
     {
         public int DonorId { get; set; }
         public string DonorName { get; set; }
+        public bool isAvailable { get; set; }   
         public string BloodType { get; set; }
     }
 }

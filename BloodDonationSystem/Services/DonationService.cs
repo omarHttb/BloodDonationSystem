@@ -57,9 +57,60 @@ namespace BloodDonationSystem.Services
             return true;
         }
 
-        public Task<int> TotalNumberOfDonations()
+        public async Task<int> TotalNumberOfDonations()
         {
-           return _context.Donations.CountAsync();
+           return await _context.Donations.CountAsync();
+        }
+
+        public async Task<Donation> GetDonationByBloodRequestIdAsync(int bloodRequestId)
+        {
+            return await _context.Donations.FirstOrDefaultAsync(d => d.BloodRequestId == bloodRequestId);
+        }
+
+        public async Task<bool> CancelDonation(Donation donation)
+        {
+            donation.StatusId = 3;
+
+           await _context.SaveChangesAsync();
+
+            return true;
+
+        }
+
+        public async Task<bool> CompleteDonation(Donation donation)
+        {
+            donation.StatusId = 1;
+
+          await  _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> RejectDonation(Donation donation)
+        {
+            donation.StatusId = 4;
+
+           await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> ApproveDonation(Donation donation)
+        {
+            donation.StatusId = 3;
+
+           await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> ReactivateDonation(Donation donation)
+        {
+            donation.StatusId = 2;
+
+          await  _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

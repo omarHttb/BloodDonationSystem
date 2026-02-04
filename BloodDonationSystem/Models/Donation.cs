@@ -10,11 +10,13 @@
 
         public int Quantity { get; set; }
 
+        public DateTime DonationSubmitDate { get; set; }
+
         public int StatusId { get; set; }
 
         public Status Status { get; set; }
 
-        public DateTime DonationDate { get; set; }
+        public DateTime? DonationDate { get; set; }
 
         public int BloodRequestId { get; set; }
     

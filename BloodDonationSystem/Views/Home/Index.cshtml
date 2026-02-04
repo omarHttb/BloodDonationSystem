@@ -8,10 +8,36 @@
     <h2>Donate Blood, Save Lives </h2>
     <br />
     <h1>Be a Hero, Give Blood Today!</h1>
-    @if(Model != null)
+    <hr />
+
+    @if(Model.IsAvailable == true)
     {
         <h3>Thank you for being a hero! Your willingness to donate blood makes a difference in saving lives.</h3>
-    } else {
+        <form asp-controller="Home"
+              asp-action="SetDonorToUnAvailable"
+              method="post"
+              style="display:inline">
+            <button type="submit" class="btn btn-sm btn-primary">
+                Asign yourself as Unavailable
+            </button>
+        </form>
+    }
+    else if (Model.IsAvailable == false)
+    {
+        <h3>Thank you for registering as a donor. We appreciate your willingness to help others in need.</h3>
+        
+        <h4>If you wish to become available for blood donations, please update your status below:</h4>
+        
+        <form asp-controller="Home"
+              asp-action="SetDonorToAvailable"
+              method="post"
+              style="display:inline">
+            <button type="submit" class="btn btn-sm btn-primary">
+                Become Available
+            </button>
+        </form>
+    }    
+    else {
         <h1>Fill the Form Below To Become a donor</h1>
         <div class="DonorForm">
             <form asp-controller="Home"

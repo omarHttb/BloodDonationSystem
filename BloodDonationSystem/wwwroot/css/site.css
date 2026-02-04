@@ -174,3 +174,72 @@ label{
     border-radius:15px;
     border: 1px solid red;
 }
+
+
+/* Container styling to lift the table */
+.table.table-striped {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 15px; /* Rounded corners for the whole table */
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: none;
+}
+
+    /* THEAD: Bold and Modern */
+    .table.table-striped thead {
+        background-color: #f8f9fa;
+    }
+
+        .table.table-striped thead th {
+            padding: 18px 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: #555;
+            border-bottom: 2px solid #ebebeb;
+            border-top: none;
+        }
+
+    /* TR & TBODY: Rows and Cells */
+    .table.table-striped tbody tr {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .table.table-striped tbody td {
+        padding: 20px;
+        vertical-align: middle;
+        font-size: 0.95rem;
+        color: #444;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+/* Striping refinement */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.02); /* Very subtle gray */
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #ffffff;
+}
+
+/* Hover effect for interactivity */
+.table.table-striped tbody tr:hover {
+    background-color: #fffafb; /* Subtle red-white tint */
+    transform: scale(1.002);
+    box-shadow: inset 4px 0 0 #dc3545; /* Red accent bar on the left */
+}
+
+/* Remove border from the last row to maintain rounded corners */
+.table.table-striped tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Clean up for Blood Type specific styling (Optional) */
+.table td:nth-child(2) {
+    font-weight: 700;
+    color: #dc3545; /* Red color for blood type */
+}

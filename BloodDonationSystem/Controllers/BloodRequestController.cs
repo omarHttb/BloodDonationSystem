@@ -12,11 +12,16 @@ namespace BloodDonationSystem.Controllers
         private readonly IBloodTypeService _bloodTypeService;
         private readonly IBloodRequestService _bloodRequestService;
         private readonly IBloodRequestBloodTypeService _bloodRequestBloodTypeService;
-        public BloodRequestController(IBloodTypeService bloodTypeService, IBloodRequestService bloodRequestService, IBloodRequestBloodTypeService bloodRequestBloodTypeService)
+        private readonly IDonationService _donationService;
+        private readonly IDonorService _donorService;
+        public BloodRequestController(IBloodTypeService bloodTypeService, IBloodRequestService bloodRequestService, IBloodRequestBloodTypeService bloodRequestBloodTypeService, 
+            IDonationService donationService, IDonorService donorService)
         {
             _bloodTypeService = bloodTypeService;
             _bloodRequestService = bloodRequestService;
+            _donationService = donationService;
             _bloodRequestBloodTypeService = bloodRequestBloodTypeService;
+            _donorService = donorService;
         }
 
 
@@ -46,12 +51,12 @@ namespace BloodDonationSystem.Controllers
             }).ToList();
             return bloodRequestsAndBloodTypes;
         }
-        public async Task<IActionResult> BloodRequest()
+        public async Task<IActionResult> BloodRequestManagement()
         {
 
             var bloodRequestsAndBloodTypes = await GetAllBloodRequestAndBloodTypes();
 
-            return View(bloodRequestsAndBloodTypes);
+            return View("BloodRequestManagement", bloodRequestsAndBloodTypes);
 
         }
         [HttpPost]
@@ -116,7 +121,7 @@ namespace BloodDonationSystem.Controllers
             }
 
 
-            return View("BloodRequest", bloodRequestsAndBloodTypes);
+            return View("BloodRequestManagement", bloodRequestsAndBloodTypes);
 
         }
 
@@ -130,7 +135,7 @@ namespace BloodDonationSystem.Controllers
 
             var bloodRequestsAndBloodTypes = await GetAllBloodRequestAndBloodTypes();
 
-            return View("BloodRequest", bloodRequestsAndBloodTypes);
+            return View("BloodRequestManagement", bloodRequestsAndBloodTypes);
         }
 
         [HttpPost]
@@ -144,9 +149,130 @@ namespace BloodDonationSystem.Controllers
 
 
 
-            return View("BloodRequest", bloodRequestsAndBloodTypes);
+            return View("BloodRequestManagement", bloodRequestsAndBloodTypes);
         }
 
+        public async Task<IActionResult> ApprovedBloodRequests(int id)
+        {
+            var userId = User.FindFirst("UserID")?.Value;
+
+            var approvedBloodRequestDTO =  await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+            return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+        }
+
+        public async Task<IActionResult> CreateDonationRequest(int BloodRequestId)
+        {
+
+            var userId =  User.FindFirst("UserID")?.Value;
+
+            var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
+
+
+            var DonationRequest = new Donation
+            {
+                DonorId = donor.Id,
+                StatusId = 2,
+                Quantity = 0,
+                BloodRequestId = BloodRequestId,
+                DonationSubmitDate = DateTime.Now
+            };
+            var createdDonationRequest = await _donationService.CreateDonationAsync(DonationRequest);
+
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+            return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+
+
+        }
+
+        public async Task<IActionResult> CancelDonation( int BloodRequestId)
+        {
+
+            var userId = User.FindFirst("UserID")?.Value;
+
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+
+            await _donationService.CancelDonation(donation);
+
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+            return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+
+
+        }
+
+        public async Task<IActionResult> ReactivateDonation(int BloodRequestId)
+        {
+
+            var userId = User.FindFirst("UserID")?.Value;
+
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+
+            await _donationService.ReactivateDonation(donation);
+
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+            return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+
+
+        }
+
+        public async Task<IActionResult> RejectDonation(int BloodRequestId)
+        {
+
+            var userId = User.FindFirst("UserID")?.Value;
+
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+
+            await _donationService.RejectDonation(donation);
+
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+            return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+
+
+        }
+
+        public async Task<IActionResult> CompleteDonation(int BloodRequestId)
+        {
+
+            var userId = User.FindFirst("UserID")?.Value;
+
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+
+            await _donationService.CompleteDonation(donation);
+
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+
+            return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+
+
+        }
+
+        public async Task<IActionResult> ApproveDonation(int BloodRequestId)
+        {
+
+            var userId = User.FindFirst("UserID")?.Value;
+
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+
+            await _donationService.ApproveDonation(donation);
+
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+
+
+            return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+
+
+        }
 
     }
 }

@@ -31,6 +31,7 @@ namespace BloodDonationSystem.Controllers
             return View(donor);
         }
 
+        [HttpPost]
         public async Task<IActionResult> CreateDonor(Donor donor)
         {
             var userId = User.FindFirst("UserID")?.Value;
@@ -57,5 +58,40 @@ namespace BloodDonationSystem.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [HttpPost]
+
+        public async Task<IActionResult> SetDonorToAvailable()
+        {
+            var userId = User.FindFirst("UserID")?.Value;
+            if (userId.IsNullOrEmpty() || userId == "0")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
+            if (donor == null)
+            {
+                return RedirectToAction("Index");
+            }
+            await _donorService.UpdateDonorToAvailable(donor);
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> SetDonorToUnAvailable()
+        {
+            var userId = User.FindFirst("UserID")?.Value;
+            if (userId.IsNullOrEmpty() || userId == "0")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
+            if (donor == null)
+            {
+                return RedirectToAction("Index");
+            }
+            await _donorService.UpdateDonorToUnAvailable(donor);
+            return RedirectToAction("Index");
+        }
+
     }
 }

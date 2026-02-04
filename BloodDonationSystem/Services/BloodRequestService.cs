@@ -2,6 +2,7 @@
 using BloodDonationSystem.Models;
 using BloodDonationSystem.Data;
 using BloodDonationSystem.Services.Interfaces;
+using BloodDonationSystem.DTOS;
 
 namespace BloodDonationSystem.Services
 {
@@ -111,6 +112,53 @@ namespace BloodDonationSystem.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<BloodRequestToSubmitDTO> GetAllApprovedBloodRequest(int UserId)
+        {
+            var donorRecord = await _context.Donors.FirstOrDefaultAsync(x => x.UserId == UserId);
+            bool isDonor = donorRecord != null;
+            bool doesUserHaveBloodType = donorRecord.BloodTypeId != null;
+            string donationStatusString = "No Donations Yet";
+
+            var lastDonation = await _context.Donations
+                .Include(d => d.Status)
+                .Where(d => d.DonorId == donorRecord.Id)
+                .OrderByDescending(d => d.DonationDate)
+                .FirstOrDefaultAsync();
+            if (lastDonation == null)
+            {
+                donationStatusString = "you did not donate";
+            }
+            else 
+            {         
+                donationStatusString = lastDonation.Status.StatusName;
+            }
+
+
+            var approvedRequests = await _context.BloodRequests
+                    .Where(br => br.isApproved)
+                    .Include(br => br.bloodRequestBloodTypes)
+                        .ThenInclude(bbt => bbt.BloodType)
+                    .SelectMany(br => br.bloodRequestBloodTypes, (br, bbt) => new ApprovedBloodRequestDTO
+                    {
+                        Id = br.Id,
+                        BloodTypeName = bbt.BloodType.BloodTypeName,
+                        QuantityRequested = bbt.Quantity,
+                        BloodRequestDate = br.BloodRequestDate,
+                        IsBloodRequestActive = br.IsActive,
+                        Status = donationStatusString
+                    }).ToListAsync();
+
+            var BloodRequestToSubmit = new BloodRequestToSubmitDTO
+            {
+                isUserADonor = isDonor,
+                DoesUserHaveBloodType = doesUserHaveBloodType,
+                ApprovedBloodRequests = approvedRequests,
+                IsDonorAvailableToDonate = donorRecord.IsAvailable
+            };
+
+            return BloodRequestToSubmit;
         }
     }
 }

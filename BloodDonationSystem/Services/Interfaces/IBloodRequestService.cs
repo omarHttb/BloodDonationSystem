@@ -1,3 +1,4 @@
+using BloodDonationSystem.DTOS;
 using BloodDonationSystem.Models;
 
 namespace BloodDonationSystem.Services.Interfaces
@@ -7,6 +8,9 @@ namespace BloodDonationSystem.Services.Interfaces
     {
         Task<BloodRequest> GetBloodRequestByIdAsync(int id);
         Task<List<BloodRequest>> GetAllBloodRequestWithBloodTypesAsync();
+
+        Task<BloodRequestToSubmitDTO> GetAllApprovedBloodRequest(int userId);
+
         Task<List<BloodRequest>> GetAllBloodRequestAsnyc();
         Task<BloodRequest> CreateBloodRequestAsync(BloodRequest bloodRequest);
         Task<BloodRequest> UpdateBloodRequestAsync(int id, BloodRequest bloodRequest);

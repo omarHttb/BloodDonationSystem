@@ -1,0 +1,119 @@
+﻿@using BloodDonationSystem.DTOS
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model BloodRequestToSubmitDTO
+@{
+}
+@if(Model.ApprovedBloodRequests.Count == 0)
+{
+    <h2>No approved blood requests at the moment. Please check back later.</h2>
+    return;
+}
+
+@if(Model.isUserADonor == false)
+{
+    <h3>You are not registered as a donor. Please register as a donor to view and respond to blood requests.</h3>
+    return;
+}
+
+@if(Model.DoesUserHaveBloodType == false)
+{
+    <h3>You have not specified your blood type.Please Contact the admin to assign blood type.</h3>
+    return;
+}
+
+<h1>Be a hero and donate Today!</h1>
+
+@if(!Model.IsDonorAvailableToDonate)
+{
+    <h3>You are currently not Available to donate blood. Please Set yourself Available to donate!</h3>
+}
+
+
+<h4>Important Note: if you see 2 or more requests with the same ID it means that any of blood types in the request are needed</h4>
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Blood Requeset Id</th>
+            <th>Blood Type</th>
+            <th>Quantity Requested</th>
+            <th>Blood Request Date</th>
+            <th>is Active</th>
+            <th>Donation Status</th>
+            <th>submit now</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var bloodRequest in Model.ApprovedBloodRequests)
+        {
+            <tr>
+                <td>@bloodRequest.Id</td>
+                <td>@bloodRequest.BloodTypeName</td>
+                <td>@bloodRequest.QuantityRequested</td>
+                <td>
+                    @bloodRequest.BloodRequestDate.ToShortDateString()
+                </td>   
+                <td>@bloodRequest.IsBloodRequestActive</td>
+                <td>@bloodRequest.Status</td>
+                <td>
+                    @if (bloodRequest.Status == "you did not donate")
+                    {
+                        <form asp-controller="BloodRequest"
+                              asp-action="CreateDonationRequest"
+                              method="post"
+                              style="display:inline">
+
+                            <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
+
+                            <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")>
+                                Donate Now
+                            </button>
+                        </form>
+                    }
+                    else if (bloodRequest.Status == "Pending")
+                    {
+                        <form asp-controller="BloodRequest"
+                              asp-action="CancelDonation"
+                              method="post"
+                              style="display:inline">
+
+                            <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
+
+                            <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")>
+                                Cancel Donation
+                            </button>
+                        </form>
+
+                    }
+                    else if (bloodRequest.Status == "Completed")
+                    {
+                        <button class="btn btn-secondary" disabled>Donation Completed</button>
+                    }
+                    else if (bloodRequest.Status == "Cancelled")
+                    {
+                        <form asp-controller="BloodRequest"
+                              asp-action="ReactivateDonation"
+                              method="post"
+                              style="display:inline">
+
+                            <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
+
+                            <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")>
+                                Donate Now
+                            </button>
+                        </form>
+                    }
+                    else if (bloodRequest.Status == "Rejected")
+                    {
+                        <button class="btn btn-primary" disabled>Donate Rejected</button>
+                    }
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+

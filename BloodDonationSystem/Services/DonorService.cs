@@ -90,6 +90,7 @@ namespace BloodDonationSystem.Services
                 .Select(d => new DonorDTO
                 {
                     DonorId = d.Id,
+                    isAvailable = d.IsAvailable,
                     DonorName = d.User.Name,
                     BloodType = d.BloodType.BloodTypeName,
                     // DO NOT fetch the whole bloodTypes list here
@@ -113,6 +114,25 @@ namespace BloodDonationSystem.Services
                 .Where(d => d.Id == donorId)
                 .ExecuteUpdateAsync(d => d.SetProperty(donor => donor.BloodTypeId, bloodTypeId));
             return Task.FromResult(true);
+        }
+
+        public async Task<bool> UpdateDonorToAvailable(Donor donor)
+        {
+            donor.IsAvailable = true;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> UpdateDonorToUnAvailable(Donor donor)
+        {
+            donor.IsAvailable = false;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+
         }
     }
 }

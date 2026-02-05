@@ -29,7 +29,7 @@ namespace BloodDonationSystem.Services
         public async Task<Donation> CreateDonationAsync(Donation Donation)
         {
            var lastDonation = await _context.Donations
-                              .Where(d => d.DonorId == Donation.DonorId)
+                              .Where(d => d.DonorId == Donation.DonorId && d.BloodRequestId == Donation.BloodRequestId)
                               .OrderByDescending(d => d.DonationSubmitDate)
                               .FirstOrDefaultAsync();
             if (lastDonation != null

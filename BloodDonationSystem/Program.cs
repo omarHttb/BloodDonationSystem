@@ -12,8 +12,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //services
-builder.Services.AddScoped<IBloodRequestBloodTypeService,BloodRequestBloodTypeService>();
 builder.Services.AddScoped<IBloodRequestService, BloodRequestService>();
+builder.Services.AddScoped<IBloodCompatibilityService, BloodCompatibilityService>();
 builder.Services.AddScoped<IBloodTypeService,BloodTypeService>();
 builder.Services.AddScoped<IDonationService,DonationService>();
 builder.Services.AddScoped<IDonorService,DonorService>();

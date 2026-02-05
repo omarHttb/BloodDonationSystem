@@ -35,7 +35,6 @@
             @foreach (var donations in Model)
             {
                     
-        // Robust comparison (trim + case-insensitive) and correct UI attribute rendering
                 bool disableApprove =
                 (!donations.IsDonationActive && !donations.IsDonatorAvailable)
                 || string.Equals(donations.DonationStatus?.Trim(), "Cancelled", StringComparison.OrdinalIgnoreCase)

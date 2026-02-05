@@ -14,6 +14,8 @@
 
         public string DonationStatus { get; set; }
 
+        public int QuantityRequested { get; set; }
+
         public int DonationQuantity { get; set; }
 
         public DateTime DonationDateSubmitted {  get; set; }

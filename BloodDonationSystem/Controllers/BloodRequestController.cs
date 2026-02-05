@@ -11,117 +11,91 @@ namespace BloodDonationSystem.Controllers
 
         private readonly IBloodTypeService _bloodTypeService;
         private readonly IBloodRequestService _bloodRequestService;
-        private readonly IBloodRequestBloodTypeService _bloodRequestBloodTypeService;
         private readonly IDonationService _donationService;
         private readonly IDonorService _donorService;
-        public BloodRequestController(IBloodTypeService bloodTypeService, IBloodRequestService bloodRequestService, IBloodRequestBloodTypeService bloodRequestBloodTypeService, 
-            IDonationService donationService, IDonorService donorService)
+        private readonly IBloodCompatibilityService _bloodCompatibilityService;
+        public BloodRequestController(IBloodTypeService bloodTypeService, IBloodRequestService bloodRequestService,  
+            IDonationService donationService, IDonorService donorService, IBloodCompatibilityService bloodCompatibilityService)
         {
             _bloodTypeService = bloodTypeService;
             _bloodRequestService = bloodRequestService;
             _donationService = donationService;
-            _bloodRequestBloodTypeService = bloodRequestBloodTypeService;
             _donorService = donorService;
+            _bloodCompatibilityService = bloodCompatibilityService;
         }
 
-
-        private async Task<CreateBloodRequestDTO> GetAllBloodRequestAndBloodTypes()
+        private async Task<CreateBloodRequestDTO> BloodRequestManagementPageDTO()
         {
-            var allBloodTypes = await _bloodTypeService.GetAllBloodTypeAsync();
-            List<BloodRequest> allBloodRequests = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
-            var bloodRequestsAndBloodTypes = new CreateBloodRequestDTO();
-            bloodRequestsAndBloodTypes.BloodTypes = allBloodTypes.Select(bt => new BloodTypeSelectionDTO
+            var sourceData = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
+
+            var getAllBloodTypes = await _bloodTypeService.GetAllBloodTypeAsync();
+
+            var viewModel = new CreateBloodRequestDTO
             {
-                BloodTypeId = bt.Id,
-                BloodTypeName = bt.BloodTypeName,
-                IsSelected = false,
-                Quantity = 0
-            }).ToList();
-            bloodRequestsAndBloodTypes.BloodRequests = allBloodRequests
-            .SelectMany(br => br.bloodRequestBloodTypes, (br, bbt) => new BloodRequestsDTO
-            {
-                Id = br.Id, // The ID of the Blood Request (this will repeat for rows 1, 1, etc.)
-                // Data from the Child (Specific Blood Type & Quantity)
-                BloodTypeName = bbt.BloodType.BloodTypeName,
-                QuantityRequested = bbt.Quantity, // The specific quantity for THIS blood type
-                // Data from the Parent (Shared details)
-                BloodRequestDate = br.BloodRequestDate,
-                IsBloodRequestApproved = br.isApproved,
-                IsBloodRequestActive = br.IsActive
-            }).ToList();
-            return bloodRequestsAndBloodTypes;
+                BloodTypes = getAllBloodTypes.Select(bt => new BloodTypeSelectionDTO
+                {
+                    BloodTypeId = bt.Id,
+                    BloodTypeName = bt.BloodTypeName,
+                    Quantity = 0
+                }).ToList(),
+
+                BloodRequests = sourceData.Select(req => new BloodRequestsDTO
+                {
+                    Id = req.Id,
+                    BloodRequestDate = req.BloodRequestDate,
+                    BloodTypeName = req.BloodType.BloodTypeName,
+                    IsBloodRequestActive = req.IsActive,
+                    IsBloodRequestApproved = req.isApproved,
+                    QuantityRequested = req.Quantity,
+                })
+            };
+            return viewModel;
         }
+
+
         public async Task<IActionResult> BloodRequestManagement()
         {
 
-            var bloodRequestsAndBloodTypes = await GetAllBloodRequestAndBloodTypes();
 
-            return View("BloodRequestManagement", bloodRequestsAndBloodTypes);
+            var viewModel = await BloodRequestManagementPageDTO();
 
+            return View("BloodRequestManagement", viewModel);
         }
         [HttpPost]
         public async Task<IActionResult> CreateBloodRequest(CreateBloodRequestDTO bloodrequest)
         {
-            var allBloodTypes = await _bloodTypeService.GetAllBloodTypeAsync();
+            var viewModel = new object();
 
-            var AllBloodRequests = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
+            var selectedBloodType = bloodrequest.BloodTypes
+                .FirstOrDefault(x => x.BloodTypeId == bloodrequest.SelectedBloodTypeId);
 
-            var bloodRequestsAndBloodTypes = new CreateBloodRequestDTO();
-
-                        bloodRequestsAndBloodTypes.BloodRequests = AllBloodRequests
-            .SelectMany(br => br.bloodRequestBloodTypes, (br, bbt) => new BloodRequestsDTO
+            if (selectedBloodType == null || selectedBloodType.Quantity <= 0)
             {
-                Id = br.Id,   
-                BloodTypeName = bbt.BloodType.BloodTypeName,
-                QuantityRequested = bbt.Quantity,     
-                BloodRequestDate = br.BloodRequestDate,
-                IsBloodRequestApproved = br.isApproved,
-                IsBloodRequestActive = br.IsActive
-            }).ToList();
-            
+                 viewModel = await BloodRequestManagementPageDTO();
 
-            bloodRequestsAndBloodTypes.BloodRequests = AllBloodRequests.Select(br => new BloodRequestsDTO
-            {
-                Id = br.Id,
-                BloodTypeName = br.bloodRequestBloodTypes.Select(bbt => bbt.BloodType.BloodTypeName).FirstOrDefault(),
-                QuantityRequested = br.bloodRequestBloodTypes.Select(bbt => bbt.Quantity).FirstOrDefault(),
-                BloodRequestDate = br.BloodRequestDate,
-                IsBloodRequestApproved = br.isApproved,
-                IsBloodRequestActive = br.IsActive
-            }).ToList();
-
-
-            if (!bloodrequest.BloodTypes.Any(x => x.IsSelected))
-            {
-
-                ModelState.AddModelError("", "You must select at least one blood type.");
-
-                return View("BloodRequest", bloodRequestsAndBloodTypes);
+                ModelState.AddModelError("", "Please select a valid blood type and quantity.");
+                return View("BloodRequestManagement", viewModel);
             }
-            var request = new BloodRequest
+
+            var typeIdToSave = bloodrequest.SelectedBloodTypeId;
+            var quantityToSave = selectedBloodType.Quantity;
+
+            BloodRequest newBloodRequest = new BloodRequest
             {
-                BloodRequestDate = DateTime.Now,
+                BloodTypeId = typeIdToSave,
                 isApproved = false,
-                IsActive = false
+                IsActive = false,
+                BloodRequestDate = DateTime.Now,
+                Quantity = quantityToSave,
+
             };
-           var RequestWithId =  await _bloodRequestService.CreateBloodRequestAsync(request);
-            
-            foreach (var bloodType in bloodrequest.BloodTypes)
-            {
-                if (bloodType.IsSelected && bloodType.Quantity > 0)
-                {
-                    var bloodRequestBloodType = new BloodRequestBloodType
-                    {
-                        BloodRequestId = RequestWithId.Id,
-                        BloodTypeId = bloodType.BloodTypeId,
-                        Quantity = bloodType.Quantity
-                    };
-                    await _bloodRequestBloodTypeService.CreateBloodRequestBloodTypeAsync(bloodRequestBloodType);
-                }
-            }
+            //TODO : CREATE BLOOD REQUEEST
+            await _bloodRequestService.CreateBloodRequestAsync(newBloodRequest);
 
 
-            return View("BloodRequestManagement", bloodRequestsAndBloodTypes);
+             viewModel = await BloodRequestManagementPageDTO();
+
+            return View("BloodRequestManagement", viewModel);
 
         }
 
@@ -133,9 +107,9 @@ namespace BloodDonationSystem.Controllers
 
             if (!success) return NotFound();
 
-            var bloodRequestsAndBloodTypes = await GetAllBloodRequestAndBloodTypes();
+            var viewModel = await BloodRequestManagementPageDTO();
 
-            return View("BloodRequestManagement", bloodRequestsAndBloodTypes);
+            return View("BloodRequestManagement", viewModel);
         }
 
         [HttpPost]
@@ -145,11 +119,9 @@ namespace BloodDonationSystem.Controllers
 
             if (!success) return NotFound();
 
-            var bloodRequestsAndBloodTypes = await GetAllBloodRequestAndBloodTypes();
+            var viewModel = await BloodRequestManagementPageDTO();
 
-
-
-            return View("BloodRequestManagement", bloodRequestsAndBloodTypes);
+            return View("BloodRequestManagement", viewModel);
         }
 
         public async Task<IActionResult> ApprovedBloodRequests(int id)
@@ -161,16 +133,29 @@ namespace BloodDonationSystem.Controllers
             return View("ApprovedBloodRequests", approvedBloodRequestDTO);
         }
 
-        public async Task<IActionResult> CreateDonationRequest(int BloodRequestId)
+        public async Task<IActionResult> CreateDonationRequest(int BloodRequestId,string patientBloodType)
         {
-
+            var approvedBloodRequestDTO = new object();
             var userId =  User.FindFirst("UserID")?.Value;
 
             var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
 
+            bool canDonorDonate =  _bloodCompatibilityService.CanDonate(donor.BloodType.BloodTypeName, patientBloodType);
+
+            if (!canDonorDonate)
+            {
+
+                ModelState.AddModelError("BloodIncompatible", "Your blood type is not compatible with patient blood type,please check a blood donation guide");
+
+                approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+                return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+            }
 
             var DonationRequest = new Donation
             {
+                //TODO : FIX DONATION REQUEST CREATION
+
                 DonorId = donor.Id,
                 StatusId = 2,
                 Quantity = 0,
@@ -179,7 +164,7 @@ namespace BloodDonationSystem.Controllers
             };
             var createdDonationRequest = await _donationService.CreateDonationAsync(DonationRequest);
 
-            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+             approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
 
             return View("ApprovedBloodRequests", approvedBloodRequestDTO);
 

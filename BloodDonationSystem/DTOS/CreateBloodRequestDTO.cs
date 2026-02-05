@@ -2,10 +2,12 @@
 {
     public class CreateBloodRequestDTO
     {
-        // The list of checkboxes
-        public List<BloodTypeSelectionDTO> BloodTypes { get; set; }
+        public List<BloodTypeSelectionDTO> BloodTypes { get; set; } = new List<BloodTypeSelectionDTO>();
 
         public IEnumerable<BloodRequestsDTO> BloodRequests { get; set; }
-    
+
+        public int SelectedBloodTypeId { get; set; }
+
+
     }
 }

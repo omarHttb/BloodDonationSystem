@@ -21,9 +21,10 @@ namespace BloodDonationSystem.Controllers
 
         public  async Task<IActionResult> UpdateBloodType(int DonorId, int BloodTypeId)
         {
-            var donors = await _donorService.GetDonorManagementData();
 
             var result = await _donorService.UpdateDonorBloodType(DonorId, BloodTypeId);
+
+            var donors = await _donorService.GetDonorManagementData();
 
             return View("Donors", donors);
 

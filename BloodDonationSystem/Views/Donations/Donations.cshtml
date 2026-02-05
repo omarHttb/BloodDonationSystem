@@ -1,8 +1,94 @@
-﻿@*
+﻿@using BloodDonationSystem.DTOS
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model List<DonationsWithBloodRequestAndDonorDTO>
+
 @{
 }
 
 
-<h1>Complete Donations Here</h1>
+<h1 style="display:flex;justify-content:center;">Complete Donations Here</h1>
+@if (ViewData.ModelState.TryGetValue("QuantityDonated", out var e) && e.Errors.Count > 0)
+{
+    <div class="alert alert-danger">@e.Errors[0].ErrorMessage</div>
+}
+
+@if (ViewData.ModelState.TryGetValue("QuantityDonatedIsZero", out var er) && er.Errors.Count > 0)
+{
+    <div class="alert alert-danger">@er.Errors[0].ErrorMessage</div>
+}
+
+<table class="table table-striped" style="width:80%; margin:auto">
+    <thead>
+        <tr>
+            <th>Donation ID</th>
+            <th>Blood Request ID</th>
+            <th>Requested Blood Type</th>
+            <th>Donator Name</th>
+            <th>Donator Blood Type</th>
+            <th>Donation Status</th>
+            <th>Donation Quantity</th>
+            <th>Quantity Requested</th>
+            <th>Donation Date Submitted</th>
+            <th>Blood Request Date</th>
+            <th>Is Donation Active</th>
+            <th>Is Donor Available</th>
+            <th>Complete Donation</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var donations in Model)
+            {
+                <tr>
+                    <td>@donations.DonationId</td>
+                    <td>@donations.BloodRequestId</td>
+                    <td>@donations.RequestedBloodType</td>
+                    <td>@donations.DonatorName</td>
+                    <td>@donations.DonatorBloodType</td>
+                    <td>@donations.DonationStatus</td>
+                    <td>@donations.DonationQuantity</td>
+                    <td>@donations.QuantityRequested</td>
+                    <td>@donations.DonationDateSubmitted</td>
+                    <td>@donations.BloodRequestDate</td>
+                    <td>@donations.IsDonationActive</td>
+                    <td>@donations.IsDonatorAvailable</td>
+                    <td>
+                        @{
+                            bool canComplete =
+                            string.Equals(donations.DonationStatus?.Trim(), "Approved", StringComparison.OrdinalIgnoreCase)
+                            && donations.IsDonationActive;
+                        }
+
+                        <form asp-controller="Donations"
+                              asp-action="CompleteDonation"
+                              method="post"
+                              style="display:inline">
+
+                            <input type="hidden" name="DonationId" value="@donations.DonationId" />
+                            <input type="hidden" name="quantityNeeded" value="@donations.QuantityRequested" />
+
+                            <input type="number"
+                                   name="quantityDonated"
+                                   class="form-control form-control-sm"
+                                   style="width: 120px; margin-bottom:15px; display:inline-block; margin-right:8px"
+                                   min="1"
+                                   max="10"
+                                   placeholder="Qty"
+                                   required
+                                   @(canComplete ? "" : "disabled") />
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-success"
+                                    disabled="@(canComplete ? null : "disabled")">
+                                Complete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

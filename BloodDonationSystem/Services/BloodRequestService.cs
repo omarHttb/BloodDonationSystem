@@ -17,10 +17,8 @@ namespace BloodDonationSystem.Services
 
         public async Task<List<BloodRequest>> GetAllBloodRequestWithBloodTypesAsync()
         {
-            return await _context.BloodRequests
-                    .Include(br => br.bloodRequestBloodTypes)      // Pulls the link table
-                        .ThenInclude(bbt => bbt.BloodType)        // Pulls the actual Type (A+, O+, etc)
-                    .ToListAsync();
+            return await _context.BloodRequests.Include(b => b.BloodType).ToListAsync();
+                    
         }
 
         public async Task<BloodRequest> GetBloodRequestByIdAsync(int id)
@@ -85,7 +83,6 @@ namespace BloodDonationSystem.Services
             request.isApproved = false;
             request.IsActive = false;
 
-            // ❌ DO NOT call Update()
             await _context.SaveChangesAsync();
 
             return true;
@@ -116,72 +113,90 @@ namespace BloodDonationSystem.Services
 
         public async Task<BloodRequestToSubmitDTO> GetAllApprovedBloodRequest(int UserId)
         {
-            // 1. Get Donor Info safely
-            var donorRecord = await _context.Donors.FirstOrDefaultAsync(x => x.UserId == UserId);
+            var response = new BloodRequestToSubmitDTO();
+
+            var donorRecord = await _context.Donors
+                                            .Include(d => d.BloodType)
+                                            .FirstOrDefaultAsync(x => x.UserId == UserId);
 
             bool isDonor = donorRecord != null;
             bool doesUserHaveBloodType = donorRecord != null && donorRecord.BloodTypeId != null;
             bool isDonorAvailable = donorRecord != null && donorRecord.IsAvailable;
+            bool isBusyWithDonation = false;
 
-            string donationStatusString = "No Donations Yet";
+            // FIX 1: specific type declaration instead of 'new object()'
+            Donation? lastDonation = null;
 
-            // 2. Only check donations if the user is actually a donor
             if (isDonor)
             {
-                var lastDonation = await _context.Donations
-                    .Include(d => d.Status)
-                    .Where(d => d.DonorId == donorRecord.Id)
-                    .OrderByDescending(d => d.DonationDate)
-                    .FirstOrDefaultAsync();
+                lastDonation = await _context.Donations
+                                             .Where(d => d.DonorId == donorRecord.Id)
+                                             .OrderByDescending(d => d.DonationSubmitDate)
+                                             .FirstOrDefaultAsync();
 
-                if (lastDonation == null)
+                if (lastDonation != null && (lastDonation.StatusId == 2 || lastDonation.StatusId == 5))
                 {
-                    donationStatusString = "You have not donated yet";
-                }
-                else
-                {
-                    donationStatusString = lastDonation.Status.StatusName;
+                    isBusyWithDonation = true;
                 }
             }
-            else
-            {
-                donationStatusString = "User is not a registered donor";
-            }
 
-            // 3. Get Requests (Fetch data first, then format)
-            // We use ToListAsync() FIRST because Entity Framework cannot translate 
-            // "string.Join" into SQL directly in all versions.
             var rawRequests = await _context.BloodRequests
-                    .Where(br => br.isApproved)
-                    .Include(br => br.bloodRequestBloodTypes)
-                    .ThenInclude(bbt => bbt.BloodType)
-                    .ToListAsync();
+                                            .Include(br => br.BloodType)
+                                            .Where(br => br.isApproved && br.IsActive)
+                                            .OrderByDescending(br => br.BloodRequestDate)
+                                            .ToListAsync();
 
-            // 4. Map to DTO in memory (Client-side)
-            var approvedRequestsDTOs = rawRequests.Select(br => new ApprovedBloodRequestDTO
+            var requestList = new List<ApprovedBloodRequestDTO>();
+
+            foreach (var req in rawRequests)
             {
-                Id = br.Id,
+                string rowStatus = "Available For Donation!";
 
-                // Join the names with a comma (e.g., "A+, O-")
-                BloodTypeName = string.Join(", ", br.bloodRequestBloodTypes.Select(bt => bt.BloodType.BloodTypeName)),
+                if (!isDonor)
+                {
+                    rowStatus = "You are not a donor";
+                }
+                else if (!doesUserHaveBloodType)
+                {
+                    rowStatus = "Request the hospital to asign your blood type";
+                }
+                else if (isBusyWithDonation)
+                {
+                    // FIX 2: Check if this specific request is the one the user is busy with
+                    if (lastDonation != null && lastDonation.BloodRequestId == req.Id)
+                    {
+                        // Map the StatusId to the string expected by your View
+                        if (lastDonation.StatusId == 2) rowStatus = "Pending";
+                        else if (lastDonation.StatusId == 5) rowStatus = "Approved";
+                    }
+                    else
+                    {
+                        // Only show this for OTHER requests
+                        rowStatus = "Existing Donation Pending";
+                    }
+                }
+                else if (!isDonorAvailable)
+                {
+                    rowStatus = "You are marked Unavailable";
+                }
 
-                // Sum the quantities
-                QuantityRequested = br.bloodRequestBloodTypes.Sum(bt => bt.Quantity),
+                requestList.Add(new ApprovedBloodRequestDTO
+                {
+                    Id = req.Id,
+                    BloodTypeName = req.BloodType.BloodTypeName,
+                    QuantityRequested = req.Quantity,
+                    BloodRequestDate = req.BloodRequestDate,
+                    IsBloodRequestActive = req.IsActive,
+                    Status = rowStatus
+                });
+            }
 
-                BloodRequestDate = br.BloodRequestDate,
-                IsBloodRequestActive = br.IsActive,
-                Status = donationStatusString
-            }).ToList();
+            response.ApprovedBloodRequests = requestList;
+            response.isUserADonor = isDonor;
+            response.DoesUserHaveBloodType = doesUserHaveBloodType;
+            response.IsDonorAvailableToDonate = isDonorAvailable;
 
-            var BloodRequestToSubmit = new BloodRequestToSubmitDTO
-            {
-                isUserADonor = isDonor,
-                DoesUserHaveBloodType = doesUserHaveBloodType,
-                ApprovedBloodRequests = approvedRequestsDTOs,
-                IsDonorAvailableToDonate = isDonorAvailable
-            };
-
-            return BloodRequestToSubmit;
+            return response;
         }
     }
 }

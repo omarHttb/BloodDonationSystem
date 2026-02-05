@@ -8,7 +8,7 @@
 
         public ICollection<Donor> Donors { get; set; }
 
-        public ICollection<BloodRequestBloodType> BloodRequestBloodTypes { get; set; }
+        public ICollection<BloodRequest> BloodRequests { get; set; }
 
 
     }

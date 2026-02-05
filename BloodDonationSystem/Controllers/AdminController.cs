@@ -102,22 +102,6 @@ namespace BloodDonationSystem.Controllers
 
         }
 
-        public async Task<IActionResult> CompleteDonation(int BloodRequestId)
-        {
-
-            var userId = User.FindFirst("UserID")?.Value;
-
-
-            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
-
-            await _donationService.CompleteDonation(donation);
-
-            var DonationsWithBloodRequestAndDonor = await _donationService.GetAllDonationsWithBloodRequestAndDonor();
-
-            return View("DonationApprovals", DonationsWithBloodRequestAndDonor);
-
-
-        }
 
         public async Task<IActionResult> ApproveDonation(int BloodRequestId)
         {

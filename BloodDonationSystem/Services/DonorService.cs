@@ -70,7 +70,7 @@ namespace BloodDonationSystem.Services
 
         public Task<Donor> GetDonorByUserIdAsync(int userId)
         {
-            var Donor = _context.Donors
+            var Donor = _context.Donors.Include(d => d.BloodType)
                 .FirstOrDefaultAsync(d => d.UserId == userId);
 
             if(Donor == null)
@@ -108,12 +108,12 @@ namespace BloodDonationSystem.Services
             };
         }
 
-        public Task<bool> UpdateDonorBloodType(int donorId, int bloodTypeId)
+        public async Task<bool> UpdateDonorBloodType(int donorId, int bloodTypeId)
         {
-            _context.Donors
+          await  _context.Donors
                 .Where(d => d.Id == donorId)
                 .ExecuteUpdateAsync(d => d.SetProperty(donor => donor.BloodTypeId, bloodTypeId));
-            return Task.FromResult(true);
+            return await Task.FromResult(true);
         }
 
         public async Task<bool> UpdateDonorToAvailable(Donor donor)

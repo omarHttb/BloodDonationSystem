@@ -8,40 +8,54 @@
     ViewData["Title"] = "Blood Request Management";
 
 }
-<div class="BloodRequestStyle">
+<div class="BloodRequestStyle container mt-4">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<h1>Blood Request Management</h1>
 
-<div class="bloodTypesRequest">
-    <h1>Add new blood request</h1>
+    <div class="bloodTypesRequest">
+        <h1 class="mb-4">Add new blood request</h1>
+
         <form asp-controller="BloodRequest" asp-action="CreateBloodRequest" method="post">
-        <h3>Create New Request</h3>
 
-        <div class="d-flex flex-wrap gap-4">
-            @for (int i = 0; i < Model.BloodTypes.Count; i++)
-            {
-                <div class="card p-3">
-                    <input type="hidden" asp-for="@Model.BloodTypes[i].BloodTypeId" />
-                    <input type="hidden" asp-for="@Model.BloodTypes[i].BloodTypeName" />
+            <div class="d-flex flex-wrap  gap-4">
+                @for (int i = 0; i < Model.BloodTypes.Count; i++)
+                {
+                    <div class="card p-3 shadow-sm" style="min-width: 150px;">
+                        <input type="hidden" asp-for="BloodTypes[i].BloodTypeId" />
+                        <input type="hidden" asp-for="BloodTypes[i].BloodTypeName" />
 
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" asp-for="@Model.BloodTypes[i].IsSelected" />
-                        <label class="form-check-label">
-                            @Model.BloodTypes[i].BloodTypeName
-                        </label>
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   asp-for="SelectedBloodTypeId"
+                                   value="@Model.BloodTypes[i].BloodTypeId"
+                                   onchange="enableQuantity(this, @i)"
+                                   id="radio_@i" />
+
+                            <label class="form-check-label fw-bold" for="radio_@i">
+                                @Model.BloodTypes[i].BloodTypeName
+                            </label>
+                        </div>
+
+                        <input type="number"
+                               asp-for="BloodTypes[i].Quantity"
+                               id="qty_@i"
+                               class="form-control mt-2 quantity-input"
+                               min="1"
+                               placeholder=""
+                               disabled />
                     </div>
+                }
+            </div>
 
-                    <input type="number" asp-for="@Model.BloodTypes[i].Quantity" class="form-control mt-2" placeholder="Qty" />
-                </div>
-            }
-        </div>
-
-        <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </form>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Submit Request</button>
+            </div>
+        </form>
+    </div>
 </div>
 
     <br />
-<br />
+    <br/>
 
 
 <span>Important Note: To make a request active an admin must approve it</span>
@@ -51,7 +65,7 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>blood type name</th>
+            <th>Patient Blood Type</th>
             <th>Quantity</th>
             <th>Request Date</th>
             <th>Is active</th>
@@ -117,6 +131,23 @@
     </tbody>
 </table>
 </div>
-</div>
+<script>
+    function enableQuantity(radioButton, index) {
+        // 1. Get all quantity inputs
+        const allInputs = document.querySelectorAll('.quantity-input');
+        
+        // 2. Disable all of them and clear their values
+        allInputs.forEach(input => {
+            input.disabled = true;
+             input.value = ''; 
+        });
 
+        // 3. Enable only the specific input next to the selected radio
+        const targetInput = document.getElementById(`qty_${index}`);
+        if (targetInput) {
+            targetInput.disabled = false;
+            targetInput.focus();
+        }
+    }
+</script>
 

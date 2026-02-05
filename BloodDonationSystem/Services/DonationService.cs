@@ -28,10 +28,33 @@ namespace BloodDonationSystem.Services
 
         public async Task<Donation> CreateDonationAsync(Donation Donation)
         {
+           var lastDonation = await _context.Donations
+                              .Where(d => d.DonorId == Donation.DonorId)
+                              .OrderByDescending(d => d.DonationSubmitDate)
+                              .FirstOrDefaultAsync();
+            if (lastDonation != null
+                && lastDonation.DonationDate.HasValue
+                && (DateTime.Now - lastDonation.DonationDate.Value).TotalDays < 56)
+            {
+                throw new InvalidOperationException("You cannot submit a new donation request...");
+            }
+            if (lastDonation != null)
+            {
+                if (lastDonation.StatusId == 3)
+                {
+                    lastDonation.StatusId = 2; // Reset to Pending
+                    lastDonation.DonationSubmitDate = DateTime.Now;
+                    lastDonation.BloodRequestId = Donation.BloodRequestId;
+                    await _context.SaveChangesAsync();
+                    return Donation;
 
-            _context.Donations.Add(Donation);
-            await _context.SaveChangesAsync();
-            return Donation;
+                }
+            }
+            
+                _context.Donations.Add(Donation);
+                await _context.SaveChangesAsync();
+                return Donation;
+            
         }
 
         public async Task<Donation> UpdateDonationAsync(int id, Donation Donation)
@@ -83,7 +106,7 @@ namespace BloodDonationSystem.Services
         {
             donation.StatusId = 1;
 
-          await  _context.SaveChangesAsync();
+            await  _context.SaveChangesAsync();
 
             return true;
         }
@@ -110,7 +133,7 @@ namespace BloodDonationSystem.Services
         {
             donation.StatusId = 2;
 
-          await  _context.SaveChangesAsync();
+            await  _context.SaveChangesAsync();
 
             return true;
         }
@@ -119,21 +142,21 @@ namespace BloodDonationSystem.Services
         {
             // Use .Select() to map the entity properties directly to your DTO constructor
             var donations = await _context.Donations
-                .Include(d => d.BloodRequest).ThenInclude(br => br.bloodRequestBloodTypes).ThenInclude(brbt => brbt.BloodType)
+                .Include(d => d.BloodRequest).ThenInclude(br => br.BloodType)
                 .Include(d => d.Donor).ThenInclude(donor => donor.BloodType)
                 .Include(d => d.Status)
                .Select(d => new DonationsWithBloodRequestAndDonorDTO
                {
                    DonationId = d.Id,
                    BloodRequestId = d.BloodRequestId,
-                   RequestedBloodType = string.Join(", ", d.BloodRequest.bloodRequestBloodTypes
-                                      .Select(b => b.BloodType.BloodTypeName)),
+                   RequestedBloodType = d.BloodRequest.BloodType.BloodTypeName,
                    DonatorName = d.Donor.User.Name,
                    DonatorBloodType = d.Donor.BloodType.BloodTypeName,
                    DonationStatus = d.Status.StatusName,
                    DonationQuantity = d.Quantity,
                    DonationDateSubmitted = d.DonationSubmitDate,
                    IsDonationActive = d.BloodRequest.IsActive,
+                   QuantityRequested = d.BloodRequest.Quantity,
                    DonationDate = d.DonationDate,
                    BloodRequestDate = d.BloodRequest.BloodRequestDate,
                    IsDonatorAvailable = d.Donor.IsAvailable,

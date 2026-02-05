@@ -30,12 +30,18 @@
     <h3 style="color:red">You are currently not Available to donate blood. Please Set yourself Available to donate!</h3>
 }
 
+@if (ViewData.ModelState["BloodIncompatible"]?.Errors.Count > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Stop!</strong> @Html.ValidationMessage("BloodIncompatible")
+    </div>
+}
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Blood Requeset Id</th>
-            <th>Blood Type</th>
+            <th>Patient Blood Type</th>
             <th>Quantity Requested</th>
             <th>Blood Request Date</th>
             <th>is Active</th>
@@ -56,7 +62,8 @@
                 <td>@bloodRequest.IsBloodRequestActive</td>
                 <td>@bloodRequest.Status</td>
                 <td>
-                    @if (bloodRequest.Status == "you did not donate")
+
+                    @if (bloodRequest.Status == "Available For Donation!")
                     {
                         <form asp-controller="BloodRequest"
                               asp-action="CreateDonationRequest"
@@ -64,6 +71,7 @@
                               style="display:inline">
 
                             <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
+                            <input type="hidden" name="patientBloodType" value="@bloodRequest.BloodTypeName" />
 
                             <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")>
                                 Donate Now
@@ -72,18 +80,23 @@
                     }
                     else if (bloodRequest.Status == "Pending")
                     {
-                        <form asp-controller="BloodRequest"
-                              asp-action="CancelDonation"
-                              method="post"
-                              style="display:inline">
-
+                        <form asp-controller="BloodRequest" asp-action="CancelDonation" method="post" style="display:inline">
                             <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
 
-                            <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")>
+                            <button type="submit" class="btn btn-sm btn-danger">
                                 Cancel Donation
                             </button>
                         </form>
+                    }
+                    else if (bloodRequest.Status == "Approved")
+                    {
+                        <form asp-controller="BloodRequest" asp-action="CancelDonation" method="post" style="display:inline">
+                            <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
 
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                Cancel Donation
+                            </button>
+                        </form>
                     }
                     else if (bloodRequest.Status == "Completed")
                     {

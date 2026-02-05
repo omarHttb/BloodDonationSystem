@@ -10,11 +10,14 @@
 
         public bool IsActive { get; set; }
 
-        
+        public int BloodTypeId { get; set; }
+
+        public BloodType BloodType { get; set; }
+
+        public int Quantity { get; set; }
 
         public ICollection<Donation> Donations { get; set; }
 
-        public ICollection<BloodRequestBloodType> bloodRequestBloodTypes { get; set; }
 
 
     }

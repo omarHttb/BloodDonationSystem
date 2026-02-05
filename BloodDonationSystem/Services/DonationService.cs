@@ -104,6 +104,12 @@ namespace BloodDonationSystem.Services
 
         public async Task<bool> CompleteDonation(Donation donation)
         {
+            var bloodRequest = _context.BloodRequests.FindAsync(donation.BloodRequestId).Result;
+
+            bloodRequest.Quantity -= donation.Quantity;
+
+            donation.DonationDate = DateTime.Now;
+
             donation.StatusId = 1;
 
             await  _context.SaveChangesAsync();

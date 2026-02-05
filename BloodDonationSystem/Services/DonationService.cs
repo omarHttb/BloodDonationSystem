@@ -1,7 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using BloodDonationSystem.Models;
 using BloodDonationSystem.Data;
+using BloodDonationSystem.DTOS;
+using BloodDonationSystem.Models;
 using BloodDonationSystem.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BloodDonationSystem.Services
 {
@@ -97,7 +99,7 @@ namespace BloodDonationSystem.Services
 
         public async Task<bool> ApproveDonation(Donation donation)
         {
-            donation.StatusId = 3;
+            donation.StatusId = 5;
 
            await _context.SaveChangesAsync();
 
@@ -111,6 +113,33 @@ namespace BloodDonationSystem.Services
           await  _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<List<DonationsWithBloodRequestAndDonorDTO>> GetAllDonationsWithBloodRequestAndDonor()
+        {
+            // Use .Select() to map the entity properties directly to your DTO constructor
+            var donations = await _context.Donations
+                .Include(d => d.BloodRequest).ThenInclude(br => br.bloodRequestBloodTypes).ThenInclude(brbt => brbt.BloodType)
+                .Include(d => d.Donor).ThenInclude(donor => donor.BloodType)
+                .Include(d => d.Status)
+               .Select(d => new DonationsWithBloodRequestAndDonorDTO
+               {
+                   DonationId = d.Id,
+                   BloodRequestId = d.BloodRequestId,
+                   RequestedBloodType = string.Join(", ", d.BloodRequest.bloodRequestBloodTypes
+                                      .Select(b => b.BloodType.BloodTypeName)),
+                   DonatorName = d.Donor.User.Name,
+                   DonatorBloodType = d.Donor.BloodType.BloodTypeName,
+                   DonationStatus = d.Status.StatusName,
+                   DonationQuantity = d.Quantity,
+                   DonationDateSubmitted = d.DonationSubmitDate,
+                   IsDonationActive = d.BloodRequest.IsActive,
+                   DonationDate = d.DonationDate,
+                   BloodRequestDate = d.BloodRequest.BloodRequestDate,
+                   IsDonatorAvailable = d.Donor.IsAvailable,
+               }).ToListAsync();
+
+            return donations;
         }
     }
 }

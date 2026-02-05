@@ -9,11 +9,14 @@ namespace BloodDonationSystem.Controllers
         private readonly IUserService _userService;
         private readonly IBloodTypeService _bloodTypeService;
         private readonly IBloodRequestService _bloodRequestService;
-        public AdminController(IUserService userService , IBloodTypeService bloodTypeService, IBloodRequestService bloodRequestService)
+        private readonly IDonationService _donationService;
+        public AdminController(IUserService userService , IBloodTypeService bloodTypeService, IBloodRequestService bloodRequestService, IDonationService donationService)
         {
             _bloodTypeService = bloodTypeService;
             _userService = userService;
             _bloodRequestService = bloodRequestService;
+            _donationService = donationService;
+
         }
         public IActionResult Admin()
         {
@@ -29,7 +32,9 @@ namespace BloodDonationSystem.Controllers
 
         public async Task<IActionResult> DonationApprovals()
         {
-            return View();
+            var DonationsWithBloodRequestAndDonor = await _donationService.GetAllDonationsWithBloodRequestAndDonor();
+
+            return View("DonationApprovals", DonationsWithBloodRequestAndDonor);
         }
 
         public async Task<IActionResult> BloodRequestApprovals()
@@ -78,6 +83,57 @@ namespace BloodDonationSystem.Controllers
             var bloodRequests = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
 
             return View("BloodRequestsApprovals", bloodRequests);
+        }
+
+        public async Task<IActionResult> RejectDonation(int BloodRequestId)
+        {
+
+            var userId = User.FindFirst("UserID")?.Value;
+
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+
+            await _donationService.RejectDonation(donation);
+
+            var DonationsWithBloodRequestAndDonor = await _donationService.GetAllDonationsWithBloodRequestAndDonor();
+
+            return View("DonationApprovals", DonationsWithBloodRequestAndDonor);
+
+
+        }
+
+        public async Task<IActionResult> CompleteDonation(int BloodRequestId)
+        {
+
+            var userId = User.FindFirst("UserID")?.Value;
+
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+
+            await _donationService.CompleteDonation(donation);
+
+            var DonationsWithBloodRequestAndDonor = await _donationService.GetAllDonationsWithBloodRequestAndDonor();
+
+            return View("DonationApprovals", DonationsWithBloodRequestAndDonor);
+
+
+        }
+
+        public async Task<IActionResult> ApproveDonation(int BloodRequestId)
+        {
+
+            var userId = User.FindFirst("UserID")?.Value;
+
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+
+            await _donationService.ApproveDonation(donation);
+
+            var DonationsWithBloodRequestAndDonor = await _donationService.GetAllDonationsWithBloodRequestAndDonor();
+
+            return View("DonationApprovals", DonationsWithBloodRequestAndDonor);
+
+
         }
     }
 }

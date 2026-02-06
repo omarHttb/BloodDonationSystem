@@ -3,6 +3,7 @@ using BloodDonationSystem.Models;
 using BloodDonationSystem.Services;
 using BloodDonationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
 
 namespace BloodDonationSystem.Controllers
 {
@@ -128,7 +129,19 @@ namespace BloodDonationSystem.Controllers
         {
             var userId = User.FindFirst("UserID")?.Value;
 
+            var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
+
+
             var approvedBloodRequestDTO =  await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+            var DidUserCompleteHisDonationTimeLimit = await _donationService.DidUserCompleteHisDonationTimeLimit(donor.Id);
+
+            if (!DidUserCompleteHisDonationTimeLimit)
+            {
+                approvedBloodRequestDTO.DidUserCompleteHisDonationTimeLimit = DidUserCompleteHisDonationTimeLimit;
+                ModelState.AddModelError("DonationTimeLimit", "You have recently donated blood, you can only donate every 60 days, please check the blood donation guide at home page for more information");
+                return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+            }
 
             return View("ApprovedBloodRequests", approvedBloodRequestDTO);
         }
@@ -139,6 +152,8 @@ namespace BloodDonationSystem.Controllers
             var userId =  User.FindFirst("UserID")?.Value;
 
             var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
+
+
 
             bool canDonorDonate =  _bloodCompatibilityService.CanDonate(donor.BloodType.BloodTypeName, patientBloodType);
 

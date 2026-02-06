@@ -32,12 +32,7 @@ namespace BloodDonationSystem.Services
                               .Where(d => d.DonorId == Donation.DonorId && d.BloodRequestId == Donation.BloodRequestId)
                               .OrderByDescending(d => d.DonationSubmitDate)
                               .FirstOrDefaultAsync();
-            if (lastDonation != null
-                && lastDonation.DonationDate.HasValue
-                && (DateTime.Now - lastDonation.DonationDate.Value).TotalDays < 56)
-            {
-                throw new InvalidOperationException("You cannot submit a new donation request...");
-            }
+
             if (lastDonation != null)
             {
                 if (lastDonation.StatusId == 3)
@@ -169,6 +164,22 @@ namespace BloodDonationSystem.Services
                }).ToListAsync();
 
             return donations;
+        }
+
+        public async Task<bool> DidUserCompleteHisDonationTimeLimit(int donorId)
+        {
+            var lastDonation = await _context.Donations
+                      .Where(d => d.DonorId == donorId )
+                      .OrderByDescending(d => d.DonationSubmitDate)
+                      .FirstOrDefaultAsync();
+            if (lastDonation != null
+                && lastDonation.DonationDate.HasValue
+                && (DateTime.Now - lastDonation.DonationDate.Value).TotalDays < 60)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -118,14 +118,13 @@ namespace BloodDonationSystem.Services
             var donorRecord = await _context.Donors
                                             .Include(d => d.BloodType)
                                             .FirstOrDefaultAsync(x => x.UserId == UserId);
-
+            Donation? lastDonation = null;
             bool isDonor = donorRecord != null;
             bool doesUserHaveBloodType = donorRecord != null && donorRecord.BloodTypeId != null;
             bool isDonorAvailable = donorRecord != null && donorRecord.IsAvailable;
             bool isBusyWithDonation = false;
+            var requestList = new List<ApprovedBloodRequestDTO>();
 
-            // FIX 1: specific type declaration instead of 'new object()'
-            Donation? lastDonation = null;
 
             if (isDonor)
             {
@@ -146,7 +145,6 @@ namespace BloodDonationSystem.Services
                                             .OrderByDescending(br => br.BloodRequestDate)
                                             .ToListAsync();
 
-            var requestList = new List<ApprovedBloodRequestDTO>();
 
             foreach (var req in rawRequests)
             {
@@ -162,16 +160,13 @@ namespace BloodDonationSystem.Services
                 }
                 else if (isBusyWithDonation)
                 {
-                    // FIX 2: Check if this specific request is the one the user is busy with
                     if (lastDonation != null && lastDonation.BloodRequestId == req.Id)
                     {
-                        // Map the StatusId to the string expected by your View
                         if (lastDonation.StatusId == 2) rowStatus = "Pending";
                         else if (lastDonation.StatusId == 5) rowStatus = "Approved";
                     }
                     else
                     {
-                        // Only show this for OTHER requests
                         rowStatus = "Existing Donation Pending";
                     }
                 }

@@ -17,6 +17,8 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<bool> ApproveDonation(Donation donation);
         Task<bool> ReactivateDonation(Donation donation);
 
+        Task<bool> DidUserCompleteHisDonationTimeLimit(int donorId);
+
         Task<List<Donation>> GetAllDonationAsync();
         Task<Donation> CreateDonationAsync(Donation donation);
         Task<Donation> UpdateDonationAsync(int id, Donation donation);

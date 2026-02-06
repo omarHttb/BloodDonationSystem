@@ -29,6 +29,10 @@
 {
     <h3 style="color:red">You are currently not Available to donate blood. Please Set yourself Available to donate!</h3>
 }
+@if (Model.DidUserCompleteHisDonationTimeLimit == false)
+{
+    <h3 style="color:red">You have recently donated blood, you can only donate every 60 days, please check the blood donation guide at home page for more information</h3>
+}
 
 @if (ViewData.ModelState["BloodIncompatible"]?.Errors.Count > 0)
 {
@@ -73,7 +77,9 @@
                             <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
                             <input type="hidden" name="patientBloodType" value="@bloodRequest.BloodTypeName" />
 
-                            <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")>
+                            <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")
+                                    @(Model.DidUserCompleteHisDonationTimeLimit == false ? "disabled" : "")
+                            >
                                 Donate Now
                             </button>
                         </form>
@@ -111,7 +117,9 @@
 
                             <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
 
-                            <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")>
+                            <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")
+                                    @(Model.DidUserCompleteHisDonationTimeLimit == false ? "disabled" : "")
+                            >
                                 Donate Now
                             </button>
                         </form>

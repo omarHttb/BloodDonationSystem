@@ -70,6 +70,7 @@
             <th>Request Date</th>
             <th>Is active</th>
             <th>Is Approved</th>
+            <th>Blood Request Status</th>
             <th>Activate</th>
         </tr>
     </thead>
@@ -94,6 +95,26 @@
                         @BloodRequest.IsBloodRequestApproved
                     </td>
                     <td>
+                        @if(BloodRequest.IsBloodRequestApproved && BloodRequest.IsBloodRequestActive)
+                        {
+                                <span class="alert alert-success">Available For Donation!</span>
+                        }
+                        else if(BloodRequest.IsBloodRequestApproved && !BloodRequest.IsBloodRequestActive)
+                        {
+                                <span class="alert alert-warning">Approved but not active yet</span>
+                        }
+                        else if (!BloodRequest.IsBloodRequestApproved)
+                        {
+                                <span class="alert alert-danger">Not Approved</span>
+                        }
+                        else if (BloodRequest.QuantityRequested <= 0)
+                        {
+                                <span class="alert alert-primary">blood Request Completed</span>
+                        }
+
+        
+                    </td>
+                    <td>
                         @if (BloodRequest.IsBloodRequestApproved){
                                     @if (!BloodRequest.IsBloodRequestActive)
                                     {
@@ -102,7 +123,8 @@
                                               asp-route-id="@BloodRequest.Id"
                                               method="post"
                                               style="display:inline">
-                                            <button type="submit" class="btn btn-sm btn-primary">
+                                            <button type="submit" class="btn btn-sm btn-primary"
+                                                @(BloodRequest.QuantityRequested <= 0 ? "disabled" : "")>
                                                 Activate
                                             </button>
                                         </form>

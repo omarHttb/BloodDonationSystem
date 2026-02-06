@@ -9,6 +9,7 @@
 
 
 <h1 style="display:flex;justify-content:center;">Complete Donations Here</h1>
+<h4 style="display:flex;justify-content:center;">an admin must approve the donation before it can be completed</h4>
 @if (ViewData.ModelState.TryGetValue("QuantityDonated", out var e) && e.Errors.Count > 0)
 {
     <div class="alert alert-danger">@e.Errors[0].ErrorMessage</div>

@@ -141,7 +141,7 @@ namespace BloodDonationSystem.Services
 
             var rawRequests = await _context.BloodRequests
                                             .Include(br => br.BloodType)
-                                            .Where(br => br.isApproved && br.IsActive)
+                                            .Where(br => br.isApproved && br.IsActive && br.Quantity > 0)
                                             .OrderByDescending(br => br.BloodRequestDate)
                                             .ToListAsync();
 

@@ -15,6 +15,7 @@
         <tr>
             <th>Id</th>
             <th>Blood Request Date</th>
+            <th>Blood Type</th>
             <th>Is Active</th>
             <th>Is Approved</th>
             <th>Actions</th>
@@ -26,12 +27,13 @@
             <tr>
                 <td>@request.Id</td>
                 <td>@request.BloodRequestDate</td>
-                <td>
-                    @request.IsActive
-                </td>
-                <td>
-                    @request.isApproved
-                </td>
+                <td><span class="alert alert-danger">@request.BloodType.BloodTypeName</span></td>
+                
+                <td> <input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(request.IsActive ? "checked" : "") /></td>
+
+                   
+                <td> <input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(request.isApproved ? "checked" : "") /></td>
+
                 <td>
                     @if (@request.isApproved == false)
                     {

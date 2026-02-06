@@ -44,7 +44,7 @@
     <thead>
         <tr>
             <th>Blood Requeset Id</th>
-            <th>Patient Blood Type</th>
+            <th>Blood Type Needed</th>
             <th>Quantity Requested</th>
             <th>Blood Request Date</th>
             <th>is Active</th>
@@ -57,13 +57,50 @@
         {
             <tr>
                 <td>@bloodRequest.Id</td>
-                <td>@bloodRequest.BloodTypeName</td>
-                <td>@bloodRequest.QuantityRequested</td>
+                <td>
+                    <span class="alert alert-danger">@bloodRequest.BloodTypeName</span>
+                </td>
+                <td style="font-weight:600;font-size:1.3rem">@bloodRequest.QuantityRequested</td>
                 <td>
                     @bloodRequest.BloodRequestDate.ToShortDateString()
-                </td>   
-                <td>@bloodRequest.IsBloodRequestActive</td>
-                <td>@bloodRequest.Status</td>
+                </td>
+                <td> <input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(bloodRequest.IsBloodRequestActive ? "checked" : "") /></td>
+                <td>
+                    @if (bloodRequest.Status == "Available For Donation!")
+                    {
+                        <span class="alert alert-success">@bloodRequest.Status</span>
+
+                    }
+                    else if (bloodRequest.Status == "Pending")
+                    {
+                        <span class="alert alert-info">@bloodRequest.Status</span>
+
+                    }
+                    else if (bloodRequest.Status == "Approved")
+                    {
+                        <span class="alert alert-info">@bloodRequest.Status</span>
+
+                    }
+                    else if (bloodRequest.Status == "Completed")
+                    {
+                        <span class="alert alert-success">@bloodRequest.Status</span>
+
+                    }
+                    else if (bloodRequest.Status == "Cancelled")
+                    {
+                        <span class="alert alert-danger">@bloodRequest.Status</span>
+
+                    }
+                    else if (bloodRequest.Status == "Rejected")
+                    {
+                        <span class="alert alert-danger">@bloodRequest.Status</span>
+
+                    }
+                    else
+                    {
+                        <span class="alert alert-secondary">@bloodRequest.Status</span>
+                    }
+                </td>
                 <td>
 
                     @if (bloodRequest.Status == "Available For Donation!")
@@ -127,6 +164,8 @@
                     {
                         <button class="btn btn-primary" disabled>Donate Rejected</button>
                     }
+
+
                 </td>
             </tr>
         }

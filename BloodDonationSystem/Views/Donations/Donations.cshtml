@@ -46,16 +46,16 @@
                 <tr>
                     <td>@donations.DonationId</td>
                     <td>@donations.BloodRequestId</td>
-                    <td>@donations.RequestedBloodType</td>
+                    <td><span class="alert alert-danger">@donations.RequestedBloodType </span></td>
                     <td>@donations.DonatorName</td>
-                    <td>@donations.DonatorBloodType</td>
+                    <td> <span class="alert alert-danger">@donations.DonatorBloodType </span></td>
                     <td>@donations.DonationStatus</td>
                     <td>@donations.DonationQuantity</td>
                     <td>@donations.QuantityRequested</td>
                     <td>@donations.DonationDateSubmitted</td>
                     <td>@donations.BloodRequestDate</td>
-                    <td>@donations.IsDonationActive</td>
-                    <td>@donations.IsDonatorAvailable</td>
+                    <td><input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(donations.IsDonationActive ? "checked" : "") /></td>
+                    <td><input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(donations.IsDonatorAvailable ? "checked" : "") /></td>
                     <td>
                         @{
                             bool canComplete =

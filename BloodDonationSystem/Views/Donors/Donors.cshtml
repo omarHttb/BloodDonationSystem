@@ -23,7 +23,7 @@
         <tr>
             <td>@donor.DonorId</td>
             <td>@donor.DonorName</td>
-            <td>@(donor.BloodType ?? "Not Assigned")</td>
+            <td><span class="alert alert-danger">@(donor.BloodType ?? "Not Assigned") </span></td>
             <td>@(donor.isAvailable)</td>
             <td>
                 <form asp-action="UpdateBloodType" method="post">

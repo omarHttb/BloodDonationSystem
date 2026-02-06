@@ -65,7 +65,7 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>Patient Blood Type</th>
+            <th>Blood Type needed</th>
             <th>Quantity</th>
             <th>Request Date</th>
             <th>Is active</th>
@@ -81,7 +81,9 @@
             {
                 <tr>
                     <td>@BloodRequest.Id</td>
-                    <td>@BloodRequest.BloodTypeName</td>
+                        <td>
+                            <span class="alert alert-danger">@BloodRequest.BloodTypeName</span>
+                        </td>
                     <td>
                        @BloodRequest.QuantityRequested
                     </td>
@@ -89,10 +91,10 @@
                         @BloodRequest.BloodRequestDate
                     </td>
                     <td>
-                        @BloodRequest.IsBloodRequestActive
+                        <input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(BloodRequest.IsBloodRequestActive ? "checked" : "") />
                     </td>
                     <td>
-                        @BloodRequest.IsBloodRequestApproved
+                            <input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(BloodRequest.IsBloodRequestApproved ? "checked" : "") />
                     </td>
                     <td>
                         @if(BloodRequest.IsBloodRequestApproved && BloodRequest.IsBloodRequestActive)
@@ -172,4 +174,6 @@
         }
     }
 </script>
+
+
 

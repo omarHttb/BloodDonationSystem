@@ -15,6 +15,10 @@ namespace BloodDonationSystem.Models
         [Compare("password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; }
 
+        public string? Email { get; set; }
+
+        public string? PhoneNumber { get; set; }
+
         public ICollection<UserRole> UserRoles { get; set; }
         public Donor Donors { get; set; }
 

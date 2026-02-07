@@ -9,8 +9,8 @@
         public string RequestedBloodType { get; set; }
 
         public string DonatorName { get; set; }
-        public string DonatorEmail { get; set; }
-        public string DonatorPhoneNumber { get; set; }
+        public string? DonatorEmail { get; set; }
+        public string? DonatorPhoneNumber { get; set; }
 
         public string DonatorBloodType { get; set; }
 
@@ -23,6 +23,8 @@
         public DateTime DonationDateSubmitted {  get; set; }
 
         public DateTime BloodRequestDate {  get; set; }
+
+        public DateOnly? WhenUserWantToDonate { get; set; }
 
         public bool IsDonationActive { get; set; }
 

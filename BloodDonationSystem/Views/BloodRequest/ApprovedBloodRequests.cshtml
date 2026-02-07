@@ -40,6 +40,7 @@
         <strong>Stop!</strong> @Html.ValidationMessage("BloodIncompatible")
     </div>
 }
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -114,9 +115,11 @@
                             <input type="hidden" name="patientBloodType" value="@bloodRequest.BloodTypeName" />
                             <input type="date"
                                    id="datePicker"
-                                   name="AppointmentDate"
+                                   name="WhenUserWantToDonate"
                                    min="@DateTime.Now.ToString("yyyy-MM-dd")" @(!Model.IsDonorAvailableToDonate ? "disabled" : "") 
                                    @(Model.DidUserCompleteHisDonationTimeLimit == false ? "disabled" : "") />
+                                
+                                <span asp-validation-for="WhenUserWantToDonate" class="text-danger"></span>
                             <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")
                                     @(Model.DidUserCompleteHisDonationTimeLimit == false ? "disabled" : "")
                             >

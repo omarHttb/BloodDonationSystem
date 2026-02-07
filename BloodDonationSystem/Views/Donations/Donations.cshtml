@@ -34,6 +34,7 @@
             <th>Donation Quantity</th>
             <th>Quantity Requested</th>
             <th>Donation Date Submitted</th>
+            <th>When user want to donate</th>
             <th>Blood Request Date</th>
             <th>Is Donation Active</th>
             <th>Is Donor Available</th>
@@ -74,6 +75,18 @@
                     <td>@donations.DonationQuantity</td>
                     <td>@donations.QuantityRequested</td>
                     <td>@donations.DonationDateSubmitted</td>
+                    <td>
+                        @if (@donations.WhenUserWantToDonate != null)
+                        {
+                            @donations.WhenUserWantToDonate
+                        }
+                        else
+                        {
+                            <span>N/A</span>
+                        }
+
+                    </td>
+
                     <td>@donations.BloodRequestDate</td>
                     <td><input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(donations.IsDonationActive ? "checked" : "") /></td>
                     <td><input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(donations.IsDonatorAvailable ? "checked" : "") /></td>

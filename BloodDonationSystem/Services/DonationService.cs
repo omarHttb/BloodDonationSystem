@@ -158,6 +158,7 @@ namespace BloodDonationSystem.Services
                    DonationStatus = d.Status.StatusName,
                    DonationQuantity = d.Quantity,
                    DonationDateSubmitted = d.DonationSubmitDate,
+                   WhenUserWantToDonate = d.WhenUserWantToDonate,
                    IsDonationActive = d.BloodRequest.IsActive,
                    QuantityRequested = d.BloodRequest.Quantity,
                    DonationDate = d.DonationDate,

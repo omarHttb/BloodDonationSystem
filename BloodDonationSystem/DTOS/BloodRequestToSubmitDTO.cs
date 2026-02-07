@@ -8,6 +8,7 @@
         public bool IsDonorAvailableToDonate { get; set; }   
         public bool DoesUserHaveBloodType { get; set; }
 
+        public DateOnly? WhenUserWantToDonate { get; set; }
         public bool? DidUserCompleteHisDonationTimeLimit { get; set; }
 
 

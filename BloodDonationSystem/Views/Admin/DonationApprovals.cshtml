@@ -19,10 +19,13 @@
             <th>Blood Request ID</th>
             <th>Requested Blood Type</th>
             <th>Donator Name</th>
+            <th>Donator Email</th>
+            <th>Donator Phone Number</th>
             <th>Donator Blood Type</th>
             <th>Donation Status</th>
             <th>Donation Quantity</th>
             <th>Donation Date Submitted</th>
+            <th>When user want to donate</th>
             <th>Blood Request Date</th>
             <th>Is Donation Active</th>
             <th>Is Donor Available</th>
@@ -46,10 +49,41 @@
                     <td>@donations.BloodRequestId</td>
                     <td><span class="alert alert-danger">@donations.RequestedBloodType </span></td>
                     <td>@donations.DonatorName</td>
+                    <td>
+                        @if (@donations.DonatorEmail == "" || @donations.DonatorEmail == null)
+                        {
+                            <span>N/A</span>
+                        }
+                        else
+                        {
+                            @donations.DonatorEmail
+                        }
+                    </td>
+                    <td>
+                        @if (@donations.DonatorPhoneNumber == "" || @donations.DonatorPhoneNumber == null)
+                        {
+                            <span>N/A</span>
+                        }
+                        else
+                        {
+                            @donations.DonatorPhoneNumber
+                        }
+                    </td>
                     <td> <span class="alert alert-danger">@donations.DonatorBloodType </span></td>
                     <td>@donations.DonationStatus</td>
                     <td>@donations.DonationQuantity</td>
                     <td>@donations.DonationDateSubmitted</td>
+                    <td>
+                        @if (@donations.WhenUserWantToDonate != null)
+                        {
+                            @donations.WhenUserWantToDonate
+                        }
+                        else
+                        {
+                            <span>N/A</span>
+                        }
+
+                    </td>
                     <td>@donations.BloodRequestDate</td>
                     <td> <input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(donations.IsDonationActive ? "checked" : "") /></td>
                     <td> <input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(donations.IsDonatorAvailable ? "checked" : "") /></td>

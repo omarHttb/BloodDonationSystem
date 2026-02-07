@@ -175,6 +175,9 @@ label{
     border: 1px solid red;
 }
 
+.table {
+    overflow: auto;
+}
 
 /* Container styling to lift the table */
 .table.table-striped {

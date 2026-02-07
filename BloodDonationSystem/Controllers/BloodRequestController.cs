@@ -3,7 +3,9 @@ using BloodDonationSystem.Models;
 using BloodDonationSystem.Services;
 using BloodDonationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BloodDonationSystem.Controllers
 {
@@ -146,14 +148,22 @@ namespace BloodDonationSystem.Controllers
             return View("ApprovedBloodRequests", approvedBloodRequestDTO);
         }
 
-        public async Task<IActionResult> CreateDonationRequest(int BloodRequestId,string patientBloodType)
+        public async Task<IActionResult> CreateDonationRequest(int BloodRequestId,string patientBloodType, DateOnly WhenUserWantToDonate)
         {
             var approvedBloodRequestDTO = new object();
             var userId =  User.FindFirst("UserID")?.Value;
 
             var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
 
+            if (WhenUserWantToDonate < DateOnly.FromDateTime(DateTime.Now.AddDays(-1)))
+            {
+                ModelState.AddModelError("WhenUserWantToDonate", "You must pick a future date to donate");
 
+                approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+
+                return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+
+            }
 
             bool canDonorDonate =  _bloodCompatibilityService.CanDonate(donor.BloodType.BloodTypeName, patientBloodType);
 

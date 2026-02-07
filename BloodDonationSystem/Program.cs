@@ -21,6 +21,8 @@ builder.Services.AddScoped<IRoleService,RoleService>();
 builder.Services.AddScoped<IStatusService,StatusService>();
 builder.Services.AddScoped<IUserRoleService,UserRoleService>();
 builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddScoped<IBloodBankService,BloodBankService>();
+builder.Services.AddScoped<IBloodBankHistoryService,BloodBankHistoryService>();
 
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", config =>

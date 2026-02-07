@@ -185,7 +185,9 @@ namespace BloodDonationSystem.Controllers
                 StatusId = 2,
                 Quantity = 0,
                 BloodRequestId = BloodRequestId,
-                DonationSubmitDate = DateTime.Now
+                DonationSubmitDate = DateTime.Now,
+                WhenUserWantToDonate = WhenUserWantToDonate
+
             };
             var createdDonationRequest = await _donationService.CreateDonationAsync(DonationRequest);
 

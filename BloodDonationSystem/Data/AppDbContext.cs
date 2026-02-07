@@ -14,6 +14,10 @@ namespace BloodDonationSystem.Data
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<BloodRequest> BloodRequests { get; set; }
 
+        public DbSet<BloodBank> BloodBanks { get; set; }
+
+        public DbSet<BloodBankHistory> BloodBankHistory { get; set; } 
+
         public DbSet<BloodType> BloodType { get; set; }
         public DbSet<Donation> Donations { get; set; }
 

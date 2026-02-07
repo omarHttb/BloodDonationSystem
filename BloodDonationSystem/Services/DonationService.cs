@@ -10,10 +10,14 @@ namespace BloodDonationSystem.Services
     public class DonationService : IDonationService
     {
         private readonly AppDbContext _context;
+        private readonly IBloodBankService _bloodBankService;
+        private readonly IBloodBankHistoryService _bloodBankHistoryService;
 
-        public DonationService(AppDbContext context)
+        public DonationService(AppDbContext context, IBloodBankService bloodBankService,IBloodBankHistoryService  bloodBankHistoryService)
         {
             _context = context;
+            _bloodBankService = bloodBankService;
+            _bloodBankHistoryService = bloodBankHistoryService;
         }
 
         public async Task<List<Donation>> GetAllDonationAsync()
@@ -99,7 +103,24 @@ namespace BloodDonationSystem.Services
 
         public async Task<bool> CompleteDonation(Donation donation)
         {
-            var bloodRequest = _context.BloodRequests.FindAsync(donation.BloodRequestId).Result;
+            var bloodRequest = await _context.BloodRequests.FindAsync(donation.BloodRequestId);
+
+            if (bloodRequest == null)
+            {
+                return false;
+            }
+
+            var bloodBank = await _bloodBankService.GetBloodBankFromBloodTypeIdAsync(bloodRequest.BloodTypeId);
+
+            await _bloodBankService.AddToBloodBank(bloodBank.Id, donation.Quantity);
+
+            await _bloodBankHistoryService.CreateBloodBankHistoryAsync(new BloodBankHistory
+            {
+                BloodBankId = bloodBank.Id,
+                IsBloodAdded = true,
+                QuantityTransaction = donation.Quantity,
+                TransactionDate = DateTime.Now,
+            });
 
             bloodRequest.Quantity -= donation.Quantity;
 

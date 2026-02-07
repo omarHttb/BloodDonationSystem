@@ -10,6 +10,8 @@
 
         public ICollection<BloodRequest> BloodRequests { get; set; }
 
+        public ICollection<BloodBank> BloodBanks { get; set; }  
+
 
     }
 }

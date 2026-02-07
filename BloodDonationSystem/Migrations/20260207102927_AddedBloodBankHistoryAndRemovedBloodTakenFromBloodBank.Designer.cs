@@ -4,6 +4,7 @@ using BloodDonationSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BloodDonationSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260207102927_AddedBloodBankHistoryAndRemovedBloodTakenFromBloodBank")]
+    partial class AddedBloodBankHistoryAndRemovedBloodTakenFromBloodBank
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,17 +54,20 @@ namespace BloodDonationSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("BloodAddDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("BloodBankId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsBloodAdded")
-                        .HasColumnType("bit");
+                    b.Property<DateTime>("BloodTakeDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("QuantityTransaction")
+                    b.Property<int?>("QuantityAddedToBloodBank")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int?>("QuantityTakenFromBloodBank")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

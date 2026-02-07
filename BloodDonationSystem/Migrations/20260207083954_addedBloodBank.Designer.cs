@@ -4,6 +4,7 @@ using BloodDonationSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BloodDonationSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260207083954_addedBloodBank")]
+    partial class addedBloodBank
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,34 +43,7 @@ namespace BloodDonationSystem.Migrations
 
                     b.HasIndex("BloodTypeId");
 
-                    b.ToTable("BloodBanks");
-                });
-
-            modelBuilder.Entity("BloodDonationSystem.Models.BloodBankHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BloodBankId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsBloodAdded")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("QuantityTransaction")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BloodBankId");
-
-                    b.ToTable("BloodBankHistory");
+                    b.ToTable("BloodBank");
                 });
 
             modelBuilder.Entity("BloodDonationSystem.Models.BloodRequest", b =>
@@ -98,6 +74,30 @@ namespace BloodDonationSystem.Migrations
                     b.HasIndex("BloodTypeId");
 
                     b.ToTable("BloodRequests");
+                });
+
+            modelBuilder.Entity("BloodDonationSystem.Models.BloodTakenFromBloodBank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BloodBankId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TakenDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BloodBankId");
+
+                    b.ToTable("BloodTakenFromBloodBank");
                 });
 
             modelBuilder.Entity("BloodDonationSystem.Models.BloodType", b =>
@@ -279,17 +279,6 @@ namespace BloodDonationSystem.Migrations
                     b.Navigation("BloodType");
                 });
 
-            modelBuilder.Entity("BloodDonationSystem.Models.BloodBankHistory", b =>
-                {
-                    b.HasOne("BloodDonationSystem.Models.BloodBank", "BloodBank")
-                        .WithMany("BloodTakenFromBloodBanks")
-                        .HasForeignKey("BloodBankId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BloodBank");
-                });
-
             modelBuilder.Entity("BloodDonationSystem.Models.BloodRequest", b =>
                 {
                     b.HasOne("BloodDonationSystem.Models.BloodType", "BloodType")
@@ -299,6 +288,17 @@ namespace BloodDonationSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("BloodType");
+                });
+
+            modelBuilder.Entity("BloodDonationSystem.Models.BloodTakenFromBloodBank", b =>
+                {
+                    b.HasOne("BloodDonationSystem.Models.BloodBank", "BloodBank")
+                        .WithMany("BloodTakenFromBloodBanks")
+                        .HasForeignKey("BloodBankId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BloodBank");
                 });
 
             modelBuilder.Entity("BloodDonationSystem.Models.Donation", b =>

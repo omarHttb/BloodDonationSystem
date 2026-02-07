@@ -1,0 +1,62 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<BloodBank>
+
+@{
+}
+
+
+<h1>
+    Blood Bank
+</h1>
+
+<table class="table table-striped" style="width:50vw; margin:auto">
+    <thead>
+        <tr>
+            <th>Bank ID</th>
+            <th>Blood Type</th>
+            <th>Quantity Available</th>
+            <th>Take Blood</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var bloodBank in Model)
+        {
+            <tr>
+                <td>@bloodBank.Id</td>
+                <td>@bloodBank.BloodType.BloodTypeName</td>
+                <td>@bloodBank.quantity</td>
+                <td>
+                    
+                    <form asp-controller="BloodBank"
+                          asp-action="TakeFromBloodBank"
+                          method="post"
+                          style="display:inline">
+                        <div class="d-flex flex-column gap-2 w-50">
+
+                        <input type="hidden" name="BloodBankId" value="@bloodBank.Id" />
+
+                        <input type="number"
+                               name="quantityTaken"
+                               class="form-control form-control-sm"
+                               style=" margin-bottom:15px; display:inline-block; margin-right:8px"
+                               placeholder="Qty"
+                               required
+                               />
+
+                        <button type="submit"
+                                class="btn btn-sm btn-primary"
+                                >
+                            Complete
+                        </button>
+                    </div>
+                    </form>
+                </td>
+            </tr>
+        }
+
+
+
+    </tbody>
+</table>

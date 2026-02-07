@@ -4,16 +4,24 @@
 @{
     ViewData["Title"] = "Register";
     ViewData["HideNav"] = true;
+    ViewData["CustomClass"] = "Login-style";
+
 
 }
 @model BloodDonationSystem.Models.User
 
 <form asp-controller="Account" asp-action="RegisterAccount" method="post">
-<div class="LoginContainer" style="height:550px">
+<div class="LoginContainer" style="height:auto">
     <h3 class="d-flex justify-content-center  w-100">Register</h3>
-    <label>Username</label>
-    <input type="text" name="Name" class="login-input" placeholder="Username" />
+        <label>Username</label>
+        <input type="text" name="Name" class="login-input" placeholder="Username" />
         <span asp-validation-for="Name" class="text-danger"></span>
+        <label>Email</label>
+        <input type="text" name="Email" class="login-input" placeholder="Email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+        <label>Phone Number</label>
+        <input type="text" name="PhoneNumber" class="login-input" placeholder="Phone Number" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     <label>Password</label>
         <input type="password" name="Password" class="login-input" placeholder="Password" />
     <label>Confirm password</label>

@@ -30,14 +30,7 @@ namespace BloodDonationSystem.Services
 
         public async Task<int> RegisterUserAsync(User User)
         {
-            bool userExists = await _context.Users
-                .AnyAsync(u => u.Name.ToLower() == User.Name.ToLower());
 
-            if (userExists)
-            {
-                // Handle the duplicate (throw exception or return error)
-                return -1;
-            }
             if (string.Equals(User.password,User.ConfirmPassword) == false)
             {
                 return -1;
@@ -85,6 +78,18 @@ namespace BloodDonationSystem.Services
 
             if (DbUser == null)
             {
+                DbUser = await _context.Users
+                .SingleOrDefaultAsync(u => u.Email == user.Email);
+            }
+
+            if (DbUser == null)
+            {
+                DbUser = await _context.Users
+                .SingleOrDefaultAsync(u => u.PhoneNumber == user.PhoneNumber);
+            }
+
+            if (DbUser == null)
+            {
                 return -1;
             }
 
@@ -121,6 +126,48 @@ namespace BloodDonationSystem.Services
             return users;
         }
 
+        public async Task<bool> IsUsernameExist(string username)
+        {
+            bool userNameExists = await _context.Users
+                .AnyAsync(u => u.Name.ToLower() == username.ToLower());
 
+            if (userNameExists)
+            {
+
+                return true;
+            }
+
+           return false;
+        }
+
+        public async Task<bool> IsEmailExist(string Email)
+        {
+            bool EmailExists = await _context.Users
+            .AnyAsync(u => u.Email.ToLower() == Email.ToLower());
+
+            if (EmailExists)
+            {
+
+                return true;
+            }
+
+            return false;
+
+        }
+
+        public async Task<bool> IsPhoneNumberExist(string PhoneNumber)
+        {
+            bool PhoneNumberExists = await _context.Users
+            .AnyAsync(u => u.PhoneNumber.ToLower() == PhoneNumber.ToLower());
+
+            if (PhoneNumberExists)
+            {
+
+                return true;
+            }
+
+            return false;
+
+        }
     }
 }

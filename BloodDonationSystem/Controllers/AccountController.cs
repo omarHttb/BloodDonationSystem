@@ -2,6 +2,7 @@
 using BloodDonationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
 namespace BloodDonationSystem.Controllers
@@ -33,10 +34,10 @@ namespace BloodDonationSystem.Controllers
             if (loggedInUserId != -1) 
             {
                 var claims = new List<Claim>
-        {
+            {
             new Claim(ClaimTypes.Name, user.Name),
             new Claim("UserID", loggedInUserId.ToString())
-        };
+            };
 
                 var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
                 var authProperties = new AuthenticationProperties { IsPersistent = true };
@@ -51,9 +52,40 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegisterAccount(User user) 
+        public async Task <IActionResult> RegisterAccount(User user) 
         {
-            var result = _userService.RegisterUserAsync(user).Result;
+
+            if (user.PhoneNumber.IsNullOrEmpty())
+            {
+            ModelState.AddModelError("PhoneNumber", "Phone Number is Required.");
+
+            }
+            else if (await _userService.IsPhoneNumberExist(user.PhoneNumber))
+            {
+                ModelState.AddModelError("PhoneNumber", "This phone number is already taken.");
+            }
+            if (user.Email.IsNullOrEmpty())
+            {
+                ModelState.AddModelError("Email", "Email is Required.");
+
+            }
+            else if (await _userService.IsEmailExist(user.Email))
+            {
+                ModelState.AddModelError("PhoneNumber", "This Email is already taken.");
+            }
+
+            if (user.Name.IsNullOrEmpty())
+            {
+                ModelState.AddModelError("Name", "Username is Required.");
+
+            }
+            else if (await _userService.IsUsernameExist(user.Name))
+            {
+                ModelState.AddModelError("Name", "This Username is already taken.");
+                
+            }
+
+            var result = await _userService.RegisterUserAsync(user);
             if (result != -1)
             {
                 var userRole = new UserRole
@@ -61,10 +93,9 @@ namespace BloodDonationSystem.Controllers
                     UserId = result,
                     RoleId = 1
                 };
-                _userRoleService.CreateUserRoleAsync(userRole);
+               await _userRoleService.CreateUserRoleAsync(userRole);
                 return RedirectToAction("Login");
             }
-            ModelState.AddModelError("Name", "This username is already taken.");
             return View("Register");
         }
     }

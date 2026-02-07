@@ -18,6 +18,8 @@
 
         public DateTime? DonationDate { get; set; }
 
+        
+
         public int BloodRequestId { get; set; }
     
         public BloodRequest BloodRequest { get; set; }

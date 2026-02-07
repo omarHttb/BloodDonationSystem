@@ -152,6 +152,8 @@ namespace BloodDonationSystem.Services
                    BloodRequestId = d.BloodRequestId,
                    RequestedBloodType = d.BloodRequest.BloodType.BloodTypeName,
                    DonatorName = d.Donor.User.Name,
+                   DonatorEmail = d.Donor.User.Email,
+                   DonatorPhoneNumber = d.Donor.User.PhoneNumber,   
                    DonatorBloodType = d.Donor.BloodType.BloodTypeName,
                    DonationStatus = d.Status.StatusName,
                    DonationQuantity = d.Quantity,

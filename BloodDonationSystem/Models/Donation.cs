@@ -18,7 +18,7 @@
 
         public DateTime? DonationDate { get; set; }
 
-        
+        public DateOnly? WhenUserWantToDonate { get; set; }
 
         public int BloodRequestId { get; set; }
     

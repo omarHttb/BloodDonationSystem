@@ -9,6 +9,8 @@
         public string RequestedBloodType { get; set; }
 
         public string DonatorName { get; set; }
+        public string DonatorEmail { get; set; }
+        public string DonatorPhoneNumber { get; set; }
 
         public string DonatorBloodType { get; set; }
 

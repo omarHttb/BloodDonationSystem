@@ -109,15 +109,20 @@
                               asp-action="CreateDonationRequest"
                               method="post"
                               style="display:inline">
-
+                              <div class="d-flex flex-column gap-2">
                             <input type="hidden" name="BloodRequestId" value="@bloodRequest.Id" />
                             <input type="hidden" name="patientBloodType" value="@bloodRequest.BloodTypeName" />
-
+                            <input type="date"
+                                   id="datePicker"
+                                   name="AppointmentDate"
+                                   min="@DateTime.Now.ToString("yyyy-MM-dd")" @(!Model.IsDonorAvailableToDonate ? "disabled" : "") 
+                                   @(Model.DidUserCompleteHisDonationTimeLimit == false ? "disabled" : "") />
                             <button type="submit" class="btn btn-sm btn-primary" @(!Model.IsDonorAvailableToDonate ? "disabled" : "")
                                     @(Model.DidUserCompleteHisDonationTimeLimit == false ? "disabled" : "")
                             >
                                 Donate Now
                             </button>
+                            </div>
                         </form>
                     }
                     else if (bloodRequest.Status == "Pending")
@@ -162,7 +167,7 @@
                     }
                     else if (bloodRequest.Status == "Rejected")
                     {
-                        <button class="btn btn-primary" disabled>Donate Rejected</button>
+                        <button class="btn btn-primary" disabled>Donation Rejected</button>
                     }
 
 

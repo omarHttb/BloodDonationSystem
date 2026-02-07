@@ -27,6 +27,8 @@
             <th>Blood Request ID</th>
             <th>Requested Blood Type</th>
             <th>Donator Name</th>
+            <th>Donator Email</th>
+            <th>Donator PhoneNumber</th>
             <th>Donator Blood Type</th>
             <th>Donation Status</th>
             <th>Donation Quantity</th>
@@ -48,6 +50,25 @@
                     <td>@donations.BloodRequestId</td>
                     <td><span class="alert alert-danger">@donations.RequestedBloodType </span></td>
                     <td>@donations.DonatorName</td>
+                    <td>@if( @donations.DonatorEmail == "" || @donations.DonatorEmail == null)
+                        {
+                            <span>N/A</span>
+                        }
+                        else
+                        {
+                           @donations.DonatorEmail
+                        }
+                    </td>
+                    <td>
+                        @if (@donations.DonatorPhoneNumber == "" || @donations.DonatorPhoneNumber == null)
+                        {
+                            <span>N/A</span>
+                        }
+                        else
+                        {
+                            @donations.DonatorPhoneNumber
+                        }
+                    </td>
                     <td> <span class="alert alert-danger">@donations.DonatorBloodType </span></td>
                     <td>@donations.DonationStatus</td>
                     <td>@donations.DonationQuantity</td>

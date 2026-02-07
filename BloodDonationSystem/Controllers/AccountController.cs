@@ -11,10 +11,12 @@ namespace BloodDonationSystem.Controllers
     {
         private readonly IUserService _userService;
         private readonly IUserRoleService _userRoleService;
-        public AccountController(IUserService userService, IUserRoleService userRoleService)
+        private readonly IOtpService _otpService;
+        public AccountController(IUserService userService, IUserRoleService userRoleService, IOtpService otpService)
         {
             _userService = userService;
             _userRoleService = userRoleService;
+            _otpService = otpService;
         }
         public IActionResult Register()
         {
@@ -31,20 +33,13 @@ namespace BloodDonationSystem.Controllers
         {
             int loggedInUserId = await _userService.LoginUser(user);
 
-            if (loggedInUserId != -1) 
+            if (loggedInUserId != -1)
             {
-                var claims = new List<Claim>
-            {
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim("UserID", loggedInUserId.ToString())
-            };
+                // Credentials OK! Save info to TempData for the next step
+                TempData["LoginUserId"] = loggedInUserId.ToString();
+                TempData["LoginUserName"] = user.Name;
 
-                var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
-                var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-                await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("LoginOTP");
             }
 
             ModelState.AddModelError("", "Invalid login attempt.");
@@ -52,12 +47,12 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
-        public async Task <IActionResult> RegisterAccount(User user) 
+        public async Task<IActionResult> RegisterAccount(User user)
         {
 
             if (user.PhoneNumber.IsNullOrEmpty())
             {
-            ModelState.AddModelError("PhoneNumber", "Phone Number is Required.");
+                ModelState.AddModelError("PhoneNumber", "Phone Number is Required.");
 
             }
             else if (await _userService.IsPhoneNumberExist(user.PhoneNumber))
@@ -82,21 +77,79 @@ namespace BloodDonationSystem.Controllers
             else if (await _userService.IsUsernameExist(user.Name))
             {
                 ModelState.AddModelError("Name", "This Username is already taken.");
-                
+
             }
 
-            var result = await _userService.RegisterUserAsync(user);
-            if (result != -1)
+            if (!ModelState.IsValid) return View("Register", user);
+
+            // Store the user object as a JSON string in TempData
+            TempData["PendingUser"] = System.Text.Json.JsonSerializer.Serialize(user);
+
+            return RedirectToAction("RegisterOTP");
+ 
+            
+        }
+
+        
+        public async Task<IActionResult> RegisterOTP()
+        {
+           var otp = await _otpService.GenerateOtpAsync();
+            return View("RegisterOTP", otp);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyRegisterOTP(string userEnteredOtp)
+        {
+            // 1. Validate the OTP via your service
+            bool isValid = await _otpService.ValidateOtpAsync(userEnteredOtp);
+
+            if (isValid && TempData["PendingUser"] is string userJson)
             {
-                var userRole = new UserRole
+                // 2. Retrieve and deserialize the user
+                var user = System.Text.Json.JsonSerializer.Deserialize<User>(userJson);
+
+                // 3. FINALLY save to database
+                var result = await _userService.RegisterUserAsync(user);
+                if (result != -1)
                 {
-                    UserId = result,
-                    RoleId = 1
-                };
-               await _userRoleService.CreateUserRoleAsync(userRole);
-                return RedirectToAction("Login");
+                    await _userRoleService.CreateUserRoleAsync(new UserRole { UserId = result, RoleId = 1 });
+                    return RedirectToAction("Login");
+                }
             }
-            return View("Register");
+
+            ModelState.AddModelError("", "Invalid OTP or Session Expired.");
+            return View("RegisterOTP");
+        }
+
+
+        public async Task<IActionResult> LoginOTP()
+        {
+            var otp = await _otpService.GenerateOtpAsync();
+            return View("LoginOTP", otp);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyLoginOTP(string userEnteredOtp)
+        {
+            bool isValid = await _otpService.ValidateOtpAsync(userEnteredOtp);
+
+            if (isValid && TempData["LoginUserId"] is string userId && TempData["LoginUserName"] is string userName)
+            {
+                // OTP Valid! Now do the actual Cookie SignIn
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, userName),
+            new Claim("UserID", userId)
+        };
+
+                var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
+                await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties { IsPersistent = true });
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError("", "Invalid OTP or Session Expired.");
+            return View("LoginOTP");
         }
     }
 }

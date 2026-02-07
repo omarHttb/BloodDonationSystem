@@ -1,0 +1,21 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Verify";
+    ViewData["HideNav"] = true;
+    ViewData["CustomClass"] = "Login-style";
+
+}
+<form asp-controller="Account" asp-action="VerifyLoginOTP" method="post">
+
+    
+    <div class="LoginContainer  d-flex gap-3" style="width:auto; height:auto;">
+        <h4>Login Verification</h4>
+        <h4>Enter the OTP sent to your Email.</h4>
+        <h5>The OTP @Model</h5>
+
+        <input class="form-control" type="text" name="userEnteredOtp" required />
+        <button type="submit" class="btn btn-primary">Verify & Login</button>
+    </div>
+</form>

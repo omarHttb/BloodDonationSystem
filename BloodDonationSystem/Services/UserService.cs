@@ -169,5 +169,15 @@ namespace BloodDonationSystem.Services
             return false;
 
         }
+
+        public async Task<List<string>> GetUserRolesAsync(int userId)
+        {
+            var roles = await _context.UserRoles
+                .Where(ur => ur.UserId == userId)
+                .Select(ur => ur.Role.RoleName)
+                .ToListAsync();
+
+            return roles;
+        }
     }
 }

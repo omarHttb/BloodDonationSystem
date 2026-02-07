@@ -5,6 +5,7 @@ using BloodDonationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
+using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BloodDonationSystem.Controllers
@@ -129,7 +130,7 @@ namespace BloodDonationSystem.Controllers
 
         public async Task<IActionResult> ApprovedBloodRequests(int id)
         {
-            var userId = User.FindFirst("UserID")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
 
@@ -201,8 +202,7 @@ namespace BloodDonationSystem.Controllers
         public async Task<IActionResult> CancelDonation( int BloodRequestId)
         {
 
-            var userId = User.FindFirst("UserID")?.Value;
-
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
 
@@ -218,8 +218,7 @@ namespace BloodDonationSystem.Controllers
         public async Task<IActionResult> ReactivateDonation(int BloodRequestId)
         {
 
-            var userId = User.FindFirst("UserID")?.Value;
-
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
 

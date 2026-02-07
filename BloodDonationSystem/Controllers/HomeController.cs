@@ -1,8 +1,9 @@
-using System.Diagnostics;
 using BloodDonationSystem.Models;
 using BloodDonationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BloodDonationSystem.Controllers
 {
@@ -19,7 +20,7 @@ namespace BloodDonationSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirst("UserID")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (userId.IsNullOrEmpty() || userId == "0")
             {
@@ -34,7 +35,7 @@ namespace BloodDonationSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateDonor(Donor donor)
         {
-            var userId = User.FindFirst("UserID")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (userId.IsNullOrEmpty() || userId == "0")
             {
@@ -63,7 +64,7 @@ namespace BloodDonationSystem.Controllers
 
         public async Task<IActionResult> SetDonorToAvailable()
         {
-            var userId = User.FindFirst("UserID")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId.IsNullOrEmpty() || userId == "0")
             {
                 return RedirectToAction("Login", "Account");
@@ -79,7 +80,9 @@ namespace BloodDonationSystem.Controllers
 
         public async Task<IActionResult> SetDonorToUnAvailable()
         {
-            var userId = User.FindFirst("UserID")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
             if (userId.IsNullOrEmpty() || userId == "0")
             {
                 return RedirectToAction("Login", "Account");

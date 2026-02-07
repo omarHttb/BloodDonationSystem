@@ -9,6 +9,8 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<User> GetUserByIdAsync(int id);
         Task<List<User>> GetAllUserAsync();
 
+        Task<List<string>> GetUserRolesAsync(int userId);
+
         Task<bool> IsUsernameExist(string username);
         Task<bool> IsEmailExist(string Email);
         Task<bool> IsPhoneNumberExist(string PhoneNumber);

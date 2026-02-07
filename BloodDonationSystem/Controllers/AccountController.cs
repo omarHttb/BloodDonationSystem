@@ -1,4 +1,5 @@
 ﻿using BloodDonationSystem.Models;
+using BloodDonationSystem.Services;
 using BloodDonationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,13 @@ namespace BloodDonationSystem.Controllers
         private readonly IUserService _userService;
         private readonly IUserRoleService _userRoleService;
         private readonly IOtpService _otpService;
-        public AccountController(IUserService userService, IUserRoleService userRoleService, IOtpService otpService)
+        private readonly TokenService _tokenService;
+        public AccountController(IUserService userService, IUserRoleService userRoleService, IOtpService otpService, TokenService tokenService)
         {
             _userService = userService;
             _userRoleService = userRoleService;
             _otpService = otpService;
+            _tokenService = tokenService;
         }
         public IActionResult Register()
         {
@@ -135,21 +138,37 @@ namespace BloodDonationSystem.Controllers
 
             if (isValid && TempData["LoginUserId"] is string userId && TempData["LoginUserName"] is string userName)
             {
-                // OTP Valid! Now do the actual Cookie SignIn
-                var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, userName),
-            new Claim("UserID", userId)
-        };
+                var roles = await _userService.GetUserRolesAsync(int.Parse(userId));
 
-                var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
-                await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties { IsPersistent = true });
+                var token = _tokenService.CreateToken(userId, userName, roles);
+                Response.Cookies.Append("X-Access-Token", token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true, 
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.UtcNow.AddHours(8)
+                });
 
                 return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError("", "Invalid OTP or Session Expired.");
             return View("LoginOTP");
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        [HttpPost] 
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("X-Access-Token");
+
+
+            return RedirectToAction("Login");
         }
     }
 }

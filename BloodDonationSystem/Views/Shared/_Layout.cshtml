@@ -24,12 +24,16 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Admin">Admin</a>
-                            </li>
+                            @if (User.IsInRole("Donor"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Admin">Admin</a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="BloodRequest" asp-action="BloodRequestManagement">Blood Request Management</a>
                             </li>
+
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="BloodRequest" asp-action="ApprovedBloodRequests">Blood Requests</a>
                             </li>
@@ -41,6 +45,13 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="BloodBank" asp-action="BloodBank">Blood Bank</a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                    <button type="submit" class="nav-link btn btn-link text-dark" style="cursor:pointer;">
+                                        Logout (@User.Identity.Name)
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </div>

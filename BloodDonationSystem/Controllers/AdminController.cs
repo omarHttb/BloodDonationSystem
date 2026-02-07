@@ -1,6 +1,8 @@
 ﻿using BloodDonationSystem.Models;
 using BloodDonationSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BloodDonationSystem.Controllers
 {
@@ -18,6 +20,7 @@ namespace BloodDonationSystem.Controllers
             _donationService = donationService;
 
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Admin()
         {
             return View();
@@ -88,7 +91,7 @@ namespace BloodDonationSystem.Controllers
         public async Task<IActionResult> RejectDonation(int BloodRequestId)
         {
 
-            var userId = User.FindFirst("UserID")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 
             var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
@@ -106,7 +109,7 @@ namespace BloodDonationSystem.Controllers
         public async Task<IActionResult> ApproveDonation(int BloodRequestId)
         {
 
-            var userId = User.FindFirst("UserID")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 
             var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);

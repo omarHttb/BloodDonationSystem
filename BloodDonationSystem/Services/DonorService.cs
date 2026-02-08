@@ -134,5 +134,16 @@ namespace BloodDonationSystem.Services
             return true;
 
         }
+
+        public async Task<List<Donor>> GetAllAvailableDonors()
+        {
+          var AvailableDonors = await _context.Donors
+                .Where(d => d.IsAvailable)
+                .Include(d => d.User)
+                .Include(d => d.BloodType)
+                .ToListAsync();
+
+            return AvailableDonors;
+        }
     }
 }

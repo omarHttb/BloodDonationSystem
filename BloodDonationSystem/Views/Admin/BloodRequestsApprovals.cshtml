@@ -18,6 +18,7 @@
             <th>Blood Type</th>
             <th>Is Active</th>
             <th>Is Approved</th>
+            <th>Blood Request Status</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -33,6 +34,26 @@
 
                    
                 <td> <input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(request.isApproved ? "checked" : "") /></td>
+                <td>
+                    @if (request.isApproved && request.IsActive)
+                    {
+                        <span class="alert alert-success">Available For Donation!</span>
+                    }
+                    else if (request.isApproved && !request.IsActive)
+                    {
+                        <span class="alert alert-warning">Approved but not active yet</span>
+                    }
+                    else if (!request.isApproved)
+                    {
+                        <span class="alert alert-danger">Not Approved</span>
+                    }
+                    else if (request.Quantity <= 0)
+                    {
+                        <span class="alert alert-primary">blood Request Completed</span>
+                    }
+
+
+                </td>
 
                 <td>
                     @if (@request.isApproved == false)

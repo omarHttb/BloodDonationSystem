@@ -11,10 +11,10 @@ namespace BloodDonationSystem.Services.Interfaces
 
         Task<BloodRequestToSubmitDTO> GetAllApprovedBloodRequest(int userId);
 
+        Task<int> TotalNumberOfBloodRequests();
         Task<List<BloodRequest>> GetAllBloodRequestAsnyc();
         Task<BloodRequest> CreateBloodRequestAsync(BloodRequest bloodRequest);
         Task<BloodRequest> UpdateBloodRequestAsync(int id, BloodRequest bloodRequest);
-        Task<bool> DeleteBloodRequestAsync(int id);
 
         Task<bool> ApproveBloodRequest(int id);
         Task<bool> DisApproveBloodRequest(int id);

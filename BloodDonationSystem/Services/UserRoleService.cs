@@ -32,19 +32,39 @@ namespace BloodDonationSystem.Services
             await _context.SaveChangesAsync();
             return UserRole;
         }
-
-        public async Task<UserRole> UpdateUserRoleAsync(int id, UserRole UserRole)
+        public async Task<bool> UpdateUserRolesAsync(int userId, List<int> roleIds)
         {
-            var existingUserRole = await _context.UserRoles.FindAsync(id);
-            if (existingUserRole == null) return null;
+            // 1. Get all current roles for this user
+            var currentRoles = await _context.UserRoles
+                .Where(ur => ur.UserId == userId)
+                .ToListAsync();
 
-            existingUserRole.UserId = UserRole.UserId;
-            existingUserRole.RoleId = UserRole.RoleId;
+            // 2. Remove roles that are NOT in the new list
+            var rolesToRemove = currentRoles.Where(ur => !roleIds.Contains(ur.RoleId)).ToList();
+            if (rolesToRemove.Any())
+            {
+                _context.UserRoles.RemoveRange(rolesToRemove);
+            }
 
+            // 3. Add roles that the user DOESN'T have yet
+            var existingRoleIds = currentRoles.Select(ur => ur.RoleId).ToList();
+            var rolesToAdd = roleIds
+                .Where(id => !existingRoleIds.Contains(id))
+                .Select(id => new UserRole
+                {
+                    UserId = userId,
+                    RoleId = id
+                }).ToList();
+
+            if (rolesToAdd.Any())
+            {
+                await _context.UserRoles.AddRangeAsync(rolesToAdd);
+            }
+
+            // 4. Save everything in one transaction
             await _context.SaveChangesAsync();
-            return existingUserRole;
+            return true;
         }
-
         public async Task<bool> DeleteUserRoleAsync(int id)
         {
             var UserRole = await _context.UserRoles.FindAsync(id);

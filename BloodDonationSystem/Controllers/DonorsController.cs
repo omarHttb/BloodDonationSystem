@@ -19,6 +19,14 @@ namespace BloodDonationSystem.Controllers
             return View(donors);
         }
 
+        public async Task<IActionResult> AvailableDonors()
+        {
+
+            var Availabledonors = await _donorService.GetAllAvailableDonors();
+
+            return View(Availabledonors);
+        }
+
         public  async Task<IActionResult> UpdateBloodType(int DonorId, int BloodTypeId)
         {
 

@@ -48,15 +48,6 @@ namespace BloodDonationSystem.Services
             return existingBloodRequest;
         }
 
-        public async Task<bool> DeleteBloodRequestAsync(int id)
-        {
-            var BloodRequest = await _context.BloodRequests.FindAsync(id);
-            if (BloodRequest == null) return false;
-
-            _context.BloodRequests.Remove(BloodRequest);
-            await _context.SaveChangesAsync();
-            return true;
-        }
 
         public async Task<List<BloodRequest>> GetAllBloodRequestAsnyc()
         {
@@ -192,6 +183,11 @@ namespace BloodDonationSystem.Services
             response.IsDonorAvailableToDonate = isDonorAvailable;
 
             return response;
+        }
+
+        public  async Task<int> TotalNumberOfBloodRequests()
+        {
+           return await _context.BloodRequests.CountAsync();
         }
     }
 }

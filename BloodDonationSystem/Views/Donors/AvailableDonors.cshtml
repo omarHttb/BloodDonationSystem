@@ -1,0 +1,36 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<Donor>
+
+<h2>
+    Available Donors
+</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Donor Name</th>
+            <th>Donor Email</th>
+            <th>Donor Phone Number</th>
+            <th>Donor Blood Type</th>
+            <th>Is Available</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var donor in Model)
+        {
+            <tr>
+                <td>@donor.Id</td>
+                <td>@donor.User.Name</td>
+                <td>@donor.User.Email</td>
+                <td>@donor.User.PhoneNumber</td>
+                <td><span class="alert alert-danger">@donor.BloodType.BloodTypeName</span></td>
+                <td><input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(donor.IsAvailable ? "checked" : "") /></td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -24,17 +24,118 @@
                 <td>@user.Id</td>
                 <td>@user.Username</td>
                 <td>
+                    @if(@user.BloodType == null)
+                    {
+                         <span class="alert alert-dark">N/A</span>
+                    }
+                    else{
                     <span class="alert alert-danger">@user.BloodType </span>
+                    }
                 </td>
-                @foreach (var roles in user.Roles)
-                {
-                    <td>@roles&nbsp;</td>
-                }
+
+                <td>
+                         @foreach (var roles in user.Roles)
+                         {
+                     <span class="d-flex flex-column gap-2 fw-bold">@roles</span> 
+                         }
+                   </td>
+                
                    <td>
-                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                    <button type="button"
+                            class="btn btn-sm btn-primary edit-user-btn"
+                            data-userid="@user.Id"
+                            data-username="@user.Username"
+                            data-bs-toggle="modal"
+                            data-roleids="@string.Join(",",user.RoleIds )" 
+                            data-roles="@string.Join(",", user.Roles)"
+                            data-bs-target="#editUserModal">
+                        Edit
+                    </button>
                 </td>
             </tr>
         }
         
     </tbody>
 </table>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Manage User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="UpdateUser" asp-controller="Admin" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="modalUserId" name="Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="modalUsername" class="form-control" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Assign Roles</label>
+                        <div class="d-flex flex-wrap gap-3">
+                            
+                            @if (ViewBag.AllRoles != null)
+                            {
+                                foreach (var role in ViewBag.AllRoles)
+                                {
+                                    <div class="form-check">
+                                        @* Value is the ID, used by the backend *@
+                                        <input class="form-check-input role-checkbox"
+                                               type="checkbox"
+                                               name="RoleIds"
+                                               value="@role.Id"
+                                               id="role_@role.Id">
+
+                                        @* Label is the Name, seen by the user *@
+                                        <label class="form-check-label" for="role_@role.Id">
+                                            @role.RoleName
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editModal = document.getElementById('editUserModal');
+
+            editModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const userId = button.getAttribute('data-userid');
+                const username = button.getAttribute('data-username');
+
+                // Get the IDs from the button attribute
+                const userRoleIds = button.getAttribute('data-roleids').split(',');
+
+                editModal.querySelector('#modalUserId').value = userId;
+                editModal.querySelector('#modalUsername').value = username;
+
+                // Reset all
+                editModal.querySelectorAll('.role-checkbox').forEach(cb => cb.checked = false);
+
+                // Check by Value (ID)
+                userRoleIds.forEach(id => {
+                    const cleanId = id.trim();
+                    // Select the checkbox where the value matches the ID
+                    const checkbox = editModal.querySelector(`.role-checkbox[value="${cleanId}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            });
+        });
+    </script>
+}

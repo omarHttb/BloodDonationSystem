@@ -19,8 +19,9 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<List<Donor>> GetAllDonorAsync();
         Task<Donor> CreateDonorAsync(Donor donor);
         Task<Donor> UpdateDonorAsync(int id, Donor donor);
-        Task<bool> DeleteDonorAsync(int id);
         Task<int> TotalNumberOfDonors();
+
+        Task<List<Donor>> GetAllAvailableDonors();
         Task<int> TotalBloodAvailableByType(int bloodTypeId);
 
         

@@ -83,7 +83,6 @@ namespace BloodDonationSystem.Controllers
 
             }
 
-            if (!ModelState.IsValid) return View("Register", user);
 
             // Store the user object as a JSON string in TempData
             TempData["PendingUser"] = System.Text.Json.JsonSerializer.Serialize(user);

@@ -1,9 +1,51 @@
-﻿@*
+﻿@using BloodDonationSystem.DTOS
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Reports";
 }
-<h2>Reports</h2>
-<p>View admin reports here.</p>
+@model StatusReportsDTO
+<h2 class="d-flex justify-content-center">Charts</h2>
+<table class="table table-striped" style="width:50vw; margin:auto">
+    <thead>
+        <tr>
+            <th>Total number of doners</th>
+            <th>Total number of donations</th>
+            <th>Total number of blood Requests</th>
+        </tr>
+    </thead>
+    <tbody>
+
+            <tr>
+            <td>@Model.TotalDonors</td>
+            <td>@Model.TotalDonations</td>
+            <td>@Model.TotalBloodRequests</td>
+            </tr>
+        
+    </tbody>
+</table>
+<br />
+<br />
+<h2 class="d-flex justify-content-center">Available Blood By Blood Type</h2>
+<table class="table table-striped" style="width:50vw; margin:auto">
+    <thead>
+        <tr>
+            <th>Bank ID</th>
+            <th>Blood Type</th>
+            <th>Quantity Available</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var bloodBank in Model.BloodBanks)
+        {
+            <tr>
+                <td>@bloodBank.Id</td>
+                <td>@bloodBank.BloodType.BloodTypeName</td>
+                <td>@bloodBank.quantity</td>
+            </tr>
+        }
+    </tbody>
+</table>

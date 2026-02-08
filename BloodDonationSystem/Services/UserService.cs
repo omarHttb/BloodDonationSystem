@@ -133,7 +133,12 @@ namespace BloodDonationSystem.Services
 
                     Roles = u.UserRoles
                         .Select(ur => ur.Role.RoleName)
+                        .ToList(),
+
+                    RoleIds = u.UserRoles
+                        .Select(ur => ur.RoleId)
                         .ToList()
+
                 })
                 .ToListAsync();
 

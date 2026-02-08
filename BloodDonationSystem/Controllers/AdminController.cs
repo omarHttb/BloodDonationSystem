@@ -35,12 +35,15 @@ namespace BloodDonationSystem.Controllers
             _userRoleService = userRoleService;
             _bloodBankHistoryService = bloodBankHistoryService;
         }
-        //[Authorize(Roles = "Admin")]
+
+        [Authorize(Roles = "Admin")]
         public async Task< IActionResult> Admin()
         {
             var BloodBankHistory = await _bloodBankHistoryService.GetAllBloodBankHistoryAsync();
             return View(BloodBankHistory);
         }
+
+        [Authorize(Roles = "Admin")]
 
         public async Task<IActionResult> BloodTypes()
         {
@@ -49,12 +52,16 @@ namespace BloodDonationSystem.Controllers
             return View(bloodtypes);
         }
 
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> DonationApprovals()
         {
             var DonationsWithBloodRequestAndDonor = await _donationService.GetAllDonationsWithBloodRequestAndDonor();
 
             return View("DonationApprovals", DonationsWithBloodRequestAndDonor);
         }
+
+        [Authorize(Roles = "Admin")]
 
         public async Task<IActionResult> BloodRequestApprovals()
         {
@@ -64,6 +71,7 @@ namespace BloodDonationSystem.Controllers
             return View("BloodRequestsApprovals",bloodRequests);
         }
 
+        [Authorize(Roles = "Admin")]
 
         public async Task< IActionResult> Reports()
         {
@@ -83,6 +91,8 @@ namespace BloodDonationSystem.Controllers
             return View(report);
         }
 
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Users()
         {
             var userList = await _userService.GetAllUsersWithDetailsAsync();
@@ -95,7 +105,8 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
-        
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Approve(int id)
         {
             var success = await _bloodRequestService.ApproveBloodRequest(id);
@@ -109,6 +120,8 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Reject(int id)
         {
             var success = await _bloodRequestService.DisApproveBloodRequest(id);
@@ -120,6 +133,7 @@ namespace BloodDonationSystem.Controllers
 
             return View("BloodRequestsApprovals", bloodRequests);
         }
+        [Authorize(Roles = "Admin")]
 
         public async Task<IActionResult> RejectDonation(int BloodRequestId)
         {
@@ -138,7 +152,7 @@ namespace BloodDonationSystem.Controllers
 
         }
 
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ApproveDonation(int BloodRequestId)
         {
 
@@ -157,6 +171,8 @@ namespace BloodDonationSystem.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> UpdateUser(int Id, List<int> RoleIds ,string username,string email,string phoneNumber,int bloodTypeId, bool isAvailable)
         {
             var success = await _userRoleService.UpdateUserRolesAsync  (Id, RoleIds);
@@ -187,6 +203,7 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MakeUserADoner(int id)
         {
 

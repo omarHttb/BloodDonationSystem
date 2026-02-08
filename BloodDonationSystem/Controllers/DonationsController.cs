@@ -1,5 +1,6 @@
 ﻿using BloodDonationSystem.Services;
 using BloodDonationSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloodDonationSystem.Controllers
@@ -15,6 +16,9 @@ namespace BloodDonationSystem.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+
         public async Task< IActionResult> Donations()
         {
             var DonationsWithBloodRequestAndDonor = await _donationService.GetAllDonationsWithBloodRequestAndDonor();
@@ -23,6 +27,10 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
+
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+
         public async Task<IActionResult> CompleteDonation(int donationId, int quantityDonated, int quantityNeeded)
         {
             var donation = await _donationService.GetDonationByIdAsync(donationId);

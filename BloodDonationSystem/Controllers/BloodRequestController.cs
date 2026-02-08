@@ -2,6 +2,7 @@
 using BloodDonationSystem.Models;
 using BloodDonationSystem.Services;
 using BloodDonationSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
@@ -28,6 +29,8 @@ namespace BloodDonationSystem.Controllers
             _bloodCompatibilityService = bloodCompatibilityService;
         }
 
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
         private async Task<CreateBloodRequestDTO> BloodRequestManagementPageDTO()
         {
             var sourceData = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
@@ -57,6 +60,9 @@ namespace BloodDonationSystem.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+
         public async Task<IActionResult> BloodRequestManagement()
         {
 
@@ -66,6 +72,10 @@ namespace BloodDonationSystem.Controllers
             return View("BloodRequestManagement", viewModel);
         }
         [HttpPost]
+
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+
         public async Task<IActionResult> CreateBloodRequest(CreateBloodRequestDTO bloodrequest)
         {
             var viewModel = new object();
@@ -105,6 +115,9 @@ namespace BloodDonationSystem.Controllers
 
         [HttpPost]
 
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+
         public async Task<IActionResult> Activate(int id)
         {
             var success = await _bloodRequestService.ActivateBloodRequest(id);
@@ -115,6 +128,9 @@ namespace BloodDonationSystem.Controllers
 
             return View("BloodRequestManagement", viewModel);
         }
+
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
 
         [HttpPost]
         public async Task<IActionResult> DeActivate(int id)
@@ -128,14 +144,21 @@ namespace BloodDonationSystem.Controllers
             return View("BloodRequestManagement", viewModel);
         }
 
+
         public async Task<IActionResult> ApprovedBloodRequests(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
 
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
 
-            var approvedBloodRequestDTO =  await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+            if (donor == null)
+            {
+
+                return View("ApprovedBloodRequests", approvedBloodRequestDTO);
+
+            }
 
             var DidUserCompleteHisDonationTimeLimit = await _donationService.DidUserCompleteHisDonationTimeLimit(donor.Id);
 

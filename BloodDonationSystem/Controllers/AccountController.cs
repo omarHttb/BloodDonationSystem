@@ -27,7 +27,6 @@ namespace BloodDonationSystem.Controllers
         }
         public IActionResult Login()
         {
-
             return View("Login");
         }
 
@@ -38,9 +37,10 @@ namespace BloodDonationSystem.Controllers
 
             if (loggedInUserId != -1)
             {
+                var dbUser = await _userService.GetUserByIdAsync(loggedInUserId);
                 // Credentials OK! Save info to TempData for the next step
                 TempData["LoginUserId"] = loggedInUserId.ToString();
-                TempData["LoginUserName"] = user.Name;
+                TempData["LoginUserName"] = dbUser.Name;
 
                 return RedirectToAction("LoginOTP");
             }

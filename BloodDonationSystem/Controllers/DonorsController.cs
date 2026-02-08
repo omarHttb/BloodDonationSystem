@@ -1,4 +1,5 @@
 ﻿using BloodDonationSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloodDonationSystem.Controllers
@@ -11,6 +12,10 @@ namespace BloodDonationSystem.Controllers
         {
             _donorService = donorService;
         }
+
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+
         public async Task<IActionResult> Donors()
         {
             
@@ -18,6 +23,9 @@ namespace BloodDonationSystem.Controllers
             
             return View(donors);
         }
+
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
 
         public async Task<IActionResult> AvailableDonors()
         {
@@ -27,7 +35,10 @@ namespace BloodDonationSystem.Controllers
             return View(Availabledonors);
         }
 
-        public  async Task<IActionResult> UpdateBloodType(int DonorId, int BloodTypeId)
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+
+        public async Task<IActionResult> UpdateBloodType(int DonorId, int BloodTypeId)
         {
 
             var result = await _donorService.UpdateDonorBloodType(DonorId, BloodTypeId);

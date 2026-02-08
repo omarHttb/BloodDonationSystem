@@ -1,4 +1,5 @@
 ﻿using BloodDonationSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloodDonationSystem.Controllers
@@ -13,6 +14,8 @@ namespace BloodDonationSystem.Controllers
             _bloodBankService = bloodBankService;
         }
 
+        [Authorize(Roles = "Admin")] 
+        [Authorize(Roles = "Hospital")]
         public async Task<IActionResult> BloodBank()
         {
 
@@ -20,6 +23,10 @@ namespace BloodDonationSystem.Controllers
 
             return View(bloodBanks);
         }
+
+
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
 
         public async Task<IActionResult> TakeFromBloodBank(int BloodBankId, int quantityTaken)
         {

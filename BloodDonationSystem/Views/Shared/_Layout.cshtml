@@ -26,31 +26,41 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
-                            @if (User.IsInRole("Donor"))
+                            @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Admin">Admin</a>
                                 </li>
                             }
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="BloodRequest" asp-action="BloodRequestManagement">Blood Request Management</a>
-                            </li>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Hospital"))
+                            {
+
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="BloodRequest" asp-action="BloodRequestManagement">Blood Request Management</a>
+                                    </li>
+                            }
 
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="BloodRequest" asp-action="ApprovedBloodRequests">Blood Requests</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Donors" asp-action="Donors">Donors</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Donors" asp-action="AvailableDonors">Available Donors</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Donations" asp-action="Donations">Donations</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="BloodBank" asp-action="BloodBank">Blood Bank</a>
-                            </li>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Hospital"))
+                            {
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Donors" asp-action="Donors">Donors</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Donors" asp-action="AvailableDonors">Available Donors</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Donations" asp-action="Donations">Donations</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="BloodBank" asp-action="BloodBank">Blood Bank</a>
+                                </li>
+                            }
                         </ul>
                     </div>
                     <div class="">

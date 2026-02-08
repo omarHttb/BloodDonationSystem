@@ -253,6 +253,8 @@ label{
     background-color: #ffffff; /* White background */
     border-right: 1px solid #dee2e6; /* Subtle border on the right */
     display: flex;
+    justify-content:center;
+    align-content:center;
     flex-direction: row; /* Stack links vertically */
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Slight shadow for depth */

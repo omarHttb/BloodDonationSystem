@@ -45,7 +45,7 @@ namespace BloodDonationSystem.Controllers
                 return RedirectToAction("LoginOTP");
             }
 
-            ModelState.AddModelError("", "Invalid login attempt.");
+            ModelState.AddModelError("", "Incorrect username or password.");
             return View("Login");
         }
 
@@ -192,11 +192,13 @@ namespace BloodDonationSystem.Controllers
         }
 
 
-        public IActionResult UserDonationHistory()
+        public async Task<IActionResult> UserDonationHistory()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return View();
+            var donationHistory =    await _userService.GetUserDonationHistoryAsync(int.Parse(userId));
+
+            return View(donationHistory);
         }
 
         [HttpPost]

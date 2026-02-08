@@ -22,5 +22,7 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<bool> DeleteDonorAsync(int id);
         Task<int> TotalNumberOfDonors();
         Task<int> TotalBloodAvailableByType(int bloodTypeId);
+
+        
     }
 }

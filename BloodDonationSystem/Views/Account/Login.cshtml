@@ -16,13 +16,16 @@
         <input type="text" name="Name" class="login-input" placeholder="" />
     <label>Password</label>
         <input type="password" name="Password" class="login-input" placeholder="Password" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <button type="submit"  class="login-btn">
         Log In
     </button>
     <br />
+
     <span asp-validation-for="password" class="text-danger"></span>
 
-    <p>
+    <p class="d-flex justify-content-center align-content-center">
         dont have an account yet? <a asp-controller="Account" asp-action="Register">Register here!</a>
     </p>
 

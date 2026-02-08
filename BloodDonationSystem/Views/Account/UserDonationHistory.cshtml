@@ -1,9 +1,81 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@using BloodDonationSystem.DTOS
 @{
     Layout = "_UserMenuLayout";
 }
+@model List<DonationHistoryDTO>
+
 <h1>
     Donation History
 </h1>
+
+<table class="table table-striped" style="width:100%; margin:auto">
+    <thead>
+        <tr>
+            <th>Blood Request ID</th>
+            <th>Requested Blood Type</th>
+            <th>Donation Submit Date</th>
+            <th>Donation Date</th>
+            <th>Date You Choosed</th>
+            <th>Donation Status</th>
+            <th>Quantity Donated</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var donations in Model)
+            {
+                <tr>
+                    <td>@donations.bloodRequestId</td>
+                    <td><span class="alert alert-danger">@donations.BloodRequestBloodType </span></td>
+                    <td>
+                        @if (donations.DonationSubmitDate == DateTime.MinValue)
+                        {
+                            <span>N/A</span>
+                        }
+                        else
+                        {
+                            @donations.DonationSubmitDate
+                        }
+                    </td>
+                    <td>
+                        @if (@donations.DonationDate == DateTime.MinValue)
+                        {
+                            <span>N/A</span>
+                        }
+                        else
+                        {
+                            @donations.DonationDate
+                        }
+                    </td>
+                    <td>
+                        @if (donations.DateDonorChoseToDonate == null || donations.DateDonorChoseToDonate == DateOnly.MinValue)
+                        {
+                            <span>N/A</span>
+                        }
+                        else
+                        {
+                            @donations.DateDonorChoseToDonate
+                        }
+                    </td>
+
+                    <td class="fw-bold">@donations.Status</td>
+
+                    <td>
+                        @if (donations.quantity == 0)
+                        {
+                            <span>N/A</span>
+                        }
+                        else
+                        {
+                            @donations.quantity
+                        }
+        
+                </tr>
+            }
+        }
+    </tbody>
+</table>

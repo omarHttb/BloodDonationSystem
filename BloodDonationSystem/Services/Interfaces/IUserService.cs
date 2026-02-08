@@ -18,8 +18,9 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<bool> IsPhoneNumberExist(string PhoneNumber);
         Task<int> RegisterUserAsync(User user);
         Task<User> UpdateUserAsync(int id, User user);
-        
         Task<int> LoginUser(User user);
         Task<List<UserListViewDTO>> GetAllUsersWithDetailsAsync();
+    
+        Task <List<DonationHistoryDTO>> GetUserDonationHistoryAsync(int userId);
     }
 }

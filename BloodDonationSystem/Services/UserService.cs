@@ -218,7 +218,35 @@ namespace BloodDonationSystem.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
 
+        public async Task<List<DonationHistoryDTO>> GetUserDonationHistoryAsync(int userId)
+        {
+            var donor = _context.Donors.Where(d => d.UserId == userId)
+                                        .Include(d => d.Donations)
+                                        .ThenInclude(d => d.Status)
+                                        .Include(d => d.Donations)
+                                        .ThenInclude(d => d.BloodRequest).ThenInclude(br => br.BloodType)
+                                        .FirstOrDefault();
+
+            if (donor == null)
+            {
+                return await Task.FromResult(new List<DonationHistoryDTO>());
+            }
+
+            var donationHistory =  donor.Donations.Select(d => new DonationHistoryDTO
+            {
+                quantity = d.Quantity,
+                Status = d.Status.StatusName,
+                bloodRequestId = d.BloodRequestId,
+                DonationSubmitDate = d.DonationSubmitDate,
+                BloodRequestBloodType = d.BloodRequest.BloodType.BloodTypeName,
+                DonationDate = d.DonationDate,
+                DateDonorChoseToDonate = d.WhenUserWantToDonate,
+            }).ToList();
+
+
+            return await Task.FromResult(donationHistory);
         }
     }
 }

@@ -12,7 +12,8 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<bool> UpdateDonorToAvailable(Donor donor);
         Task<bool> UpdateDonorToUnAvailable(Donor donor);
 
-
+        Task<bool> setDonorAvailability(bool availability, int userId);
+        Task<bool> IsUserAdoner(int userId);
         Task<bool> UpdateDonorBloodType(int donorId, int bloodTypeId);
         Task <DonorsAndBloodTypesDTO> GetDonorManagementData();
         Task<Donor> GetDonorByIdAsync(int id);

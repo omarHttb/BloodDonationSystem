@@ -93,13 +93,13 @@ namespace BloodDonationSystem.Services
             if (DbUser == null)
             {
                 DbUser = await _context.Users
-                .SingleOrDefaultAsync(u => u.Email == user.Email);
+                .SingleOrDefaultAsync(u => u.Email == user.Name);
             }
 
             if (DbUser == null)
             {
                 DbUser = await _context.Users
-                .SingleOrDefaultAsync(u => u.PhoneNumber == user.PhoneNumber);
+                .SingleOrDefaultAsync(u => u.PhoneNumber == user.Name);
             }
 
             if (DbUser == null)
@@ -125,20 +125,27 @@ namespace BloodDonationSystem.Services
                 .Select(u => new UserListViewDTO
                 {
                     Id = u.Id,
-                    Username = u.Name,
+                    Username = u.Name, // Ensure this matches your Entity property (e.g., UserName)
+                    Email = u.Email,
+                    PhoneNumber = u.PhoneNumber,
 
+                    // FIX 1: Handle nulls safely for Blood Type Name
                     BloodType = (u.Donors != null && u.Donors.BloodType != null)
                                 ? u.Donors.BloodType.BloodTypeName
                                 : "N/A",
 
-                    Roles = u.UserRoles
-                        .Select(ur => ur.Role.RoleName)
-                        .ToList(),
+                    // FIX 2: Populate the ID so the Modal knows which option to select
+                    bloodTypeId = (u.Donors != null && u.Donors.BloodType != null)
+                                  ? u.Donors.BloodType.Id
+                                  : 0,
 
-                    RoleIds = u.UserRoles
-                        .Select(ur => ur.RoleId)
-                        .ToList()
+                    // FIX 3: Check for null before accessing IsAvailable
+                    isUserAvailableToDonate = (u.Donors != null) ? u.Donors.IsAvailable : false,
 
+                    isUserAdoner = u.Donors != null,
+
+                    Roles = u.UserRoles.Select(ur => ur.Role.RoleName).ToList(),
+                    RoleIds = u.UserRoles.Select(ur => ur.RoleId).ToList()
                 })
                 .ToListAsync();
 

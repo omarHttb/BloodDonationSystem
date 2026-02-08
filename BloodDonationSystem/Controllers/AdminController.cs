@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
+
+
 namespace BloodDonationSystem.Controllers
 {
     public class AdminController : Controller
@@ -16,10 +18,12 @@ namespace BloodDonationSystem.Controllers
         private readonly IDonationService _donationService;
         private readonly IDonorService _donorService;
         private readonly IBloodBankService _bloodBankService;
+        private readonly IBloodBankHistoryService _bloodBankHistoryService;
         private readonly IRoleService _roleService;
         private readonly IUserRoleService _userRoleService;
         public AdminController(IUserService userService , IBloodTypeService bloodTypeService, IBloodRequestService bloodRequestService,
-            IDonationService donationService, IDonorService donorService, IBloodBankService bloodBankService, IRoleService roleService, IUserRoleService userRoleService)
+            IDonationService donationService, IDonorService donorService, IBloodBankService bloodBankService, IRoleService roleService, IUserRoleService userRoleService
+            , IBloodBankHistoryService bloodBankHistoryService)
         {
             _bloodTypeService = bloodTypeService;
             _userService = userService;
@@ -29,11 +33,13 @@ namespace BloodDonationSystem.Controllers
             _bloodBankService = bloodBankService;
             _roleService = roleService;
             _userRoleService = userRoleService;
+            _bloodBankHistoryService = bloodBankHistoryService;
         }
         //[Authorize(Roles = "Admin")]
-        public IActionResult Admin()
+        public async Task< IActionResult> Admin()
         {
-            return View();
+            var BloodBankHistory = await _bloodBankHistoryService.GetAllBloodBankHistoryAsync();
+            return View(BloodBankHistory);
         }
 
         public async Task<IActionResult> BloodTypes()
@@ -82,6 +88,9 @@ namespace BloodDonationSystem.Controllers
             var userList = await _userService.GetAllUsersWithDetailsAsync();
             var roles = await _roleService.GetAllRoleAsync();
             ViewBag.AllRoles = roles;
+            var bloodTypes = await _bloodTypeService.GetAllBloodTypeAsync();
+            ViewBag.BloodTypes = bloodTypes;
+
             return View(userList);
         }
 
@@ -148,11 +157,26 @@ namespace BloodDonationSystem.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> UpdateUser(int Id, List<int> RoleIds)
+        public async Task<IActionResult> UpdateUser(int Id, List<int> RoleIds ,string username,string email,string phoneNumber,int bloodTypeId, bool isAvailable)
         {
-            // Id is the UserId from the hidden input in your modal
-            // RoleIds is the list of checked checkbox values
             var success = await _userRoleService.UpdateUserRolesAsync  (Id, RoleIds);
+
+            var updatedUser = new User()
+            {
+                Id = Id,
+                Name = username,
+                Email = email,
+                PhoneNumber = phoneNumber,
+            };
+            await _userService.UpdateUserAsync(Id, updatedUser);
+
+            if (await _donorService.IsUserAdoner(Id) == true)
+            {
+               await _donorService.UpdateDonorBloodType(Id, bloodTypeId);
+
+                await _donorService.setDonorAvailability(isAvailable, Id);
+            }
+
 
             if (!success)
             {
@@ -161,24 +185,20 @@ namespace BloodDonationSystem.Controllers
 
             return RedirectToAction("Users");
         }
-        //[HttpPost]
-        //TODO
-        //public async Task<IActionResult> UpdateUser(string Id, List<string> Roles)
-        //{
-        //    var user = await _userManager.FindByIdAsync(Id);
-        //    if (user == null) return NotFound();
 
-        //    var currentRoles = await _userManager.GetRolesAsync(user);
+        [HttpPost]
+        public async Task<IActionResult> MakeUserADoner(int id)
+        {
 
-        //    await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            var newDoner = new Donor() {
+                UserId = id,
+                IsAvailable = false
 
-        //    // 3. Add new selected roles
-        //    if (Roles != null && Roles.Any())
-        //    {
-        //        await _userManager.AddToRolesAsync(user, Roles);
-        //    }
+            };
 
-        //    return RedirectToAction("AllUsers");
-        //}
+            await _donorService.CreateDonorAsync(newDoner);
+
+            return RedirectToAction("Users");
+        }
     }
 }

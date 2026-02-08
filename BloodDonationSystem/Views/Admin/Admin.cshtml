@@ -5,5 +5,34 @@
     Layout = "_AdminLayout";
     ViewData["Title"] = "Admin";
 }
-<h2>Admin Dashboard</h2>
-<p>Select an item from the menu.</p>
+@model List<BloodBankHistory>
+<h1>Dashboard</h1>
+
+<table class="table table-striped" style="width:50vw; margin:auto">
+    <thead>
+        <tr>
+            <th>Blood Bank History ID</th>
+            <th>Bank Id</th>
+            <th>Blood Type</th>
+            <th>Bank Blood Quantity</th>
+            <th>TransactionDate</th>
+            <th>Is Blood Added</th>
+            <th>Quantity Transaction</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var history in Model)
+        {
+            <tr>
+                <td>@history.Id</td>
+                <td>@history.BloodBankId</td>
+                <td><span class="alert alert-danger">@history.BloodBank.BloodType.BloodTypeName</span></td>
+                <td>@history.BloodBank.quantity</td>
+                <td>@history.TransactionDate</td>
+                <td><input type="checkbox" class="form-check-input" name="IsActive" value="true" disabled @(history.IsBloodAdded ? "checked" : "") /></td>
+                <td>@history.QuantityTransaction</td>
+            </tr>
+        }
+    </tbody>
+</table>

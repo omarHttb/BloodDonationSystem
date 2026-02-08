@@ -25,7 +25,7 @@ namespace BloodDonationSystem.Services
 
         public async Task<List<BloodBankHistory>> GetAllBloodBankHistoryAsync()
         {
-            return await _context.BloodBankHistory.ToListAsync();   
+            return await _context.BloodBankHistory.Include(b => b.BloodBank).ThenInclude(b=> b.BloodType).ToListAsync();   
         }
 
         public async Task<BloodBankHistory> GetBloodBankHistoryByIdAsync(int id)

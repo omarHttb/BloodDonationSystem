@@ -12,7 +12,10 @@
         <tr>
             <th>Id</th>
             <th>Username</th>
+            <th>Email</th>
+            <th>Phone Number</th>
             <th>Blood Type</th>
+            <th>is User a doner</th>
             <th>Roles</th>
             <th>Actions</th>
         </tr>
@@ -23,119 +26,148 @@
             <tr>
                 <td>@user.Id</td>
                 <td>@user.Username</td>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
                 <td>
-                    @if(@user.BloodType == null)
+                    @if (user.BloodType == null)
                     {
-                         <span class="alert alert-dark">N/A</span>
+                        <span class="alert alert-dark">N/A</span>
                     }
-                    else{
-                    <span class="alert alert-danger">@user.BloodType </span>
+                    else
+                    {
+                        <span class="alert alert-danger">@user.BloodType </span>
+                    }
+                </td>
+                <td>
+                    @if (user.isUserAdoner == false)
+                    {
+                        <form asp-action="MakeUserADoner" asp-controller="Admin" method="post">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <button class="btn btn-info fw-bold">Make user a doner</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-success fw-bold fs-3">Yes</span>
                     }
                 </td>
 
                 <td>
-                         @foreach (var roles in user.Roles)
-                         {
-                     <span class="d-flex flex-column gap-2 fw-bold">@roles</span> 
-                         }
-                   </td>
-                
-                   <td>
+                    @foreach (var roles in user.Roles)
+                    {
+                        <span class="d-flex flex-column gap-2 fw-bold">@roles</span>
+                    }
+                </td>
+
+                <td>
                     <button type="button"
-                            class="btn btn-sm btn-primary edit-user-btn"
-                            data-userid="@user.Id"
-                            data-username="@user.Username"
+                            class="btn btn-sm btn-primary"
                             data-bs-toggle="modal"
-                            data-roleids="@string.Join(",",user.RoleIds )" 
-                            data-roles="@string.Join(",", user.Roles)"
-                            data-bs-target="#editUserModal">
+                            data-bs-target="#editUserModal-@user.Id">
                         Edit
                     </button>
                 </td>
             </tr>
-        }
-        
-    </tbody>
-</table>
 
-<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editUserModalLabel">Manage User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="UpdateUser" asp-controller="Admin" method="post">
-                <div class="modal-body">
-                    <input type="hidden" id="modalUserId" name="Id" />
+            <div class="modal fade" id="editUserModal-@user.Id" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Manage User: @user.Username</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form asp-action="UpdateUser" asp-controller="Admin" method="post">
+                            <div class="modal-body">
+                                <input type="hidden" name="Id" value="@user.Id" />
 
-                    <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" id="modalUsername" class="form-control" readonly />
-                    </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input name="username" type="text" class="form-control" value="@user.Username" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input name="email" type="text" class="form-control" value="@user.Email" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Phone Number</label>
+                                    <input name="phoneNumber" type="text" class="form-control" value="@user.PhoneNumber" />
+                                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Assign Roles</label>
-                        <div class="d-flex flex-wrap gap-3">
-                            
-                            @if (ViewBag.AllRoles != null)
-                            {
-                                foreach (var role in ViewBag.AllRoles)
+                                <hr />
+
+                                <h6 class="fw-bold">Donor Status</h6>
+
+                                @if (user.isUserAdoner)
                                 {
-                                    <div class="form-check">
-                                        @* Value is the ID, used by the backend *@
-                                        <input class="form-check-input role-checkbox"
-                                               type="checkbox"
-                                               name="RoleIds"
-                                               value="@role.Id"
-                                               id="role_@role.Id">
-
-                                        @* Label is the Name, seen by the user *@
-                                        <label class="form-check-label" for="role_@role.Id">
-                                            @role.RoleName
+                                    /* SHOW THIS IF THEY ARE A DONOR */
+                                    <div class="mb-3">
+                                        <label class="form-label">Blood Type</label>
+                                        <select name="bloodTypeId" class="form-select">
+                                            <option value="0">-- Select Blood Type --</option>
+                                            @if (ViewBag.BloodTypes != null)
+                                            {
+                                                foreach (var bt in ViewBag.BloodTypes)
+                                                {
+                                                    /* EDITED: Check if this option matches the user's blood type */
+                                                    var isSelected = (user.bloodTypeId == bt.Id) ? "selected" : "";
+                                                    <!option value="@bt.Id" @isSelected>@bt.BloodTypeName</!option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input name="isAvailable" type="checkbox" class="form-check-input" value="true"
+                                               id="avail_@user.Id" @(user.isUserAvailableToDonate ? "checked" : "") />
+                                        <label class="form-check-label" for="avail_@user.Id">
+                                            Is available to donate?
                                         </label>
                                     </div>
                                 }
-                            }
-                        </div>
+                                else
+                                {
+                                    /* SHOW THIS IF THEY ARE NOT A DONOR */
+                                    <div class="alert alert-warning text-center">
+                                        <p class="mb-0">This user is not registered as a donor.</p>
+                                    </div>
+                                }
+
+                                <hr />
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Assign Roles</label>
+                                    <div class="d-flex flex-wrap gap-3">
+                                        @if (ViewBag.AllRoles != null)
+                                        {
+                                            foreach (var role in ViewBag.AllRoles)
+                                            {
+                                                /* EDITED: Check if the user already has this role */
+                                                /* Assuming RoleIds is a List<int> or List<string> on your DTO */
+                                                bool hasRole = user.RoleIds != null && user.RoleIds.Contains((int)role.Id);
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="RoleIds"
+                                                           value="@role.Id"
+                                                           id="role_@user.Id-@role.Id"
+                                                           @(hasRole ? "checked" : "")>
+                                                    <label class="form-check-label" for="role_@user.Id-@role.Id">
+                                                        @role.RoleName
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const editModal = document.getElementById('editUserModal');
-
-            editModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                const userId = button.getAttribute('data-userid');
-                const username = button.getAttribute('data-username');
-
-                // Get the IDs from the button attribute
-                const userRoleIds = button.getAttribute('data-roleids').split(',');
-
-                editModal.querySelector('#modalUserId').value = userId;
-                editModal.querySelector('#modalUsername').value = username;
-
-                // Reset all
-                editModal.querySelectorAll('.role-checkbox').forEach(cb => cb.checked = false);
-
-                // Check by Value (ID)
-                userRoleIds.forEach(id => {
-                    const cleanId = id.trim();
-                    // Select the checkbox where the value matches the ID
-                    const checkbox = editModal.querySelector(`.role-checkbox[value="${cleanId}"]`);
-                    if (checkbox) checkbox.checked = true;
-                });
-            });
-        });
-    </script>
-}
+            </div>
+        }
+    </tbody>
+</table>

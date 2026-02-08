@@ -145,5 +145,26 @@ namespace BloodDonationSystem.Services
 
             return AvailableDonors;
         }
+
+        public async Task<bool> IsUserAdoner(int userId)
+        {
+            return await _context.Donors.AnyAsync(d => d.UserId == userId);
+        }
+
+        public async Task<bool> setDonorAvailability(bool availability,int userId)
+        {
+          var donor =   await _context.Donors.FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if (donor == null)
+            {
+                donor.IsAvailable = availability;
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+
+
+            return false;
+        }
     }
 }

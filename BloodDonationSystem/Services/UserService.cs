@@ -260,5 +260,10 @@ namespace BloodDonationSystem.Services
 
             return await Task.FromResult(donationHistory);
         }
+
+        public async Task<bool> doUsersExist()
+        {
+            return await _context.Users.AnyAsync();
+        }
     }
 }

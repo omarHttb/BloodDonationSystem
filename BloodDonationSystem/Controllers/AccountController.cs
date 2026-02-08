@@ -25,8 +25,15 @@ namespace BloodDonationSystem.Controllers
         {
             return View();
         }
-        public IActionResult Login()
+        public async Task< IActionResult> Login()
         {
+           var doUsersExist =  await _userService.doUsersExist();
+
+            if(doUsersExist == false)
+            {  
+               return RedirectToAction("InitApp", "InitApp");
+            }
+
             return View("Login");
         }
 

@@ -1,0 +1,23 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h1>
+    Welcome to Blood Donation Management System
+</h1>
+
+<h3>
+    to install app Please Click the button below
+</h3>
+<h3 class="alert alert-danger">When you initialize app your username will be admin and password is 123</h3>
+<form asp-controller="InitApp"
+      asp-action="initAppTask"
+      method="post"
+      style="display:inline">
+  
+        <button type="submit" class="btn btn-sm btn-primary" )>
+            Initialize app
+        </button>
+</form>

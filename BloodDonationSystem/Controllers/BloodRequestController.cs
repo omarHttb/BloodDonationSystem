@@ -144,7 +144,9 @@ namespace BloodDonationSystem.Controllers
             return View("BloodRequestManagement", viewModel);
         }
 
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         public async Task<IActionResult> ApprovedBloodRequests(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -172,6 +174,10 @@ namespace BloodDonationSystem.Controllers
             return View("ApprovedBloodRequests", approvedBloodRequestDTO);
         }
 
+
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         public async Task<IActionResult> CreateDonationRequest(int BloodRequestId,string patientBloodType, DateOnly WhenUserWantToDonate)
         {
             var approvedBloodRequestDTO = new object();
@@ -222,6 +228,10 @@ namespace BloodDonationSystem.Controllers
 
         }
 
+
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         public async Task<IActionResult> CancelDonation( int BloodRequestId)
         {
 
@@ -237,7 +247,9 @@ namespace BloodDonationSystem.Controllers
 
 
         }
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         public async Task<IActionResult> ReactivateDonation(int BloodRequestId)
         {
 

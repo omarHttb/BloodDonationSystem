@@ -1,5 +1,6 @@
 using BloodDonationSystem.Models;
 using BloodDonationSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
@@ -18,6 +19,9 @@ namespace BloodDonationSystem.Controllers
             _donorService = donorService;
         }
 
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -33,7 +37,9 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         public async Task<IActionResult> CreateDonor(Donor donor)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -49,18 +55,24 @@ namespace BloodDonationSystem.Controllers
 
             return View("Index");
         }
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         public IActionResult Privacy()
         {
             return View();
         }
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         [HttpPost]
 
         public async Task<IActionResult> SetDonorToAvailable()
@@ -78,7 +90,9 @@ namespace BloodDonationSystem.Controllers
             await _donorService.UpdateDonorToAvailable(donor);
             return RedirectToAction("Index");
         }
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Donor")]
         public async Task<IActionResult> SetDonorToUnAvailable()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

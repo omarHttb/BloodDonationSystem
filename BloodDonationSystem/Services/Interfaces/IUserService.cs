@@ -11,6 +11,7 @@ namespace BloodDonationSystem.Services.Interfaces
 
         Task<List<string>> GetUserRolesAsync(int userId);
 
+        Task<bool> doUsersExist();
         Task<bool> ChangePassword(int userId, string currentPassword, string newPassword, string ConfirmPassword);
 
         Task<bool> IsUsernameExist(string username);

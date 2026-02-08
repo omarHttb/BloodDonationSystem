@@ -193,5 +193,32 @@ namespace BloodDonationSystem.Services
 
             return roles;
         }
+
+        public async Task<bool> ChangePassword(int userId, string currentPassword, string newPassword, string ConfirmPassword)
+        {
+            var DbUser = await _context.Users
+            .SingleOrDefaultAsync(u => u.Id == userId);
+
+            bool passwordMatch = BCrypt.Net.BCrypt.Verify(currentPassword, DbUser.password);
+
+            if(!passwordMatch)
+            {
+                return false;
+            }
+
+            if (string.Equals(newPassword, ConfirmPassword) == false)
+            {
+                return false;
+            }
+
+            newPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+            DbUser.password = newPassword;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+
+        }
     }
 }

@@ -175,8 +175,8 @@ namespace BloodDonationSystem.Controllers
         public IActionResult UserSettings()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-             
-            var user =  _userService.GetUserByIdAsync(int.Parse(userId)).Result;
+
+            var user = _userService.GetUserByIdAsync(int.Parse(userId)).Result;
             if (user == null)
             {
                 return RedirectToAction("Login");
@@ -186,7 +186,7 @@ namespace BloodDonationSystem.Controllers
 
         public IActionResult ChangeUserPassword()
         {
-           var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             return View();
         }
@@ -212,6 +212,31 @@ namespace BloodDonationSystem.Controllers
                 return View("UserSettings");
             }
             return View("UserSettings", UpdatedUser);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string ConfirmPassword)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(newPassword != ConfirmPassword)
+            {
+                ModelState.AddModelError("", "New password and confirmation do not match.");
+                return View("ChangeUserPassword");
+            }
+
+            if(string.IsNullOrEmpty(currentPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(ConfirmPassword))
+            {
+                ModelState.AddModelError("", "All password fields are required.");
+                return View("ChangeUserPassword");
+            }
+            bool isChanged = await _userService.ChangePassword(int.Parse(userId), currentPassword, newPassword, ConfirmPassword);
+            if (!isChanged)
+            {
+                ModelState.AddModelError("", "Failed to change password. Please check your current password and ensure the new passwords match.");
+                return View("ChangeUserPassword");
+            }
+            return RedirectToAction("ChangeUserPassword");
         }
     }
 }

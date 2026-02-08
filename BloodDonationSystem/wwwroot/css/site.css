@@ -246,3 +246,88 @@ label{
     font-weight: 700;
     color: #dc3545; /* Red color for blood type */
 }
+
+
+
+.UserMenu {
+    background-color: #ffffff; /* White background */
+    border-right: 1px solid #dee2e6; /* Subtle border on the right */
+    display: flex;
+    flex-direction: row; /* Stack links vertically */
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Slight shadow for depth */
+    gap: 10px;
+    border-radius:15px;
+}
+
+/* 3. The Individual Links (Cards) */
+.UserMenuCard {
+    display: block; /* Makes the link fill the width */
+    padding: 12px 20px;
+    margin-bottom: 8px; /* Space between links */
+    color: #495057; /* Dark grey text */
+    text-decoration: none; /* Removes underline */
+    border-radius: 8px; /* Rounded corners */
+    font-weight: 500;
+    transition: all 0.2s ease-in-out; /* Smooth hover animation */
+    border: 1px solid black;
+}
+
+    /* 4. Hover Effect */
+    .UserMenuCard:hover {
+        background-color: #e9ecef; /* Light grey background on hover */
+        color: #0d6efd; /* Blue text on hover */
+        transform: translateX(5px); /* Slight movement to the right */
+    }
+
+    /* 5. Active State (Optional - if you add a class='active' to the current page) */
+    .UserMenuCard.active {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+/* 1. The Main Container (Card Style) */
+.UpdateContainer {
+    max-width: 500px; /* Prevents it from getting too wide on big screens */
+    margin: 40px auto; /* Centers the card horizontally with space on top/bottom */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    display: flex;
+    flex-direction: column; /* Stacks everything vertically */
+    gap: 15px; /* Adds space between every element inside */
+}
+
+    /* 2. The Header Adjustment */
+    .UpdateContainer h3 {
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+    }
+
+/* 3. The Input Fields */
+.update-input {
+    width: 100%; /* Full width of the container */
+    padding: 12px 15px; /* Comfortable padding for typing */
+    font-size: 16px;
+    border: 1px solid #ced4da; /* Light grey border */
+    border-radius: 6px;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background-color: #f8f9fa; /* Very light grey background */
+}
+
+    /* 4. Input Focus State (When user clicks to type) */
+    .update-input:focus {
+        outline: none;
+        border-color: #80bdff; /* Blue border */
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); /* Blue glow */
+        background-color: #fff; /* White background on focus */
+    }
+
+/* 5. Label Styling (Optional but recommended) */
+.UpdateContainer label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: -5px; /* Pulls label closer to its input */
+}

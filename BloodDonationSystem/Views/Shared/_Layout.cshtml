@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -46,14 +48,30 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="BloodBank" asp-action="BloodBank">Blood Bank</a>
                             </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
-                                    <button type="submit" class="nav-link btn btn-link text-dark" style="cursor:pointer;">
-                                        Logout (@User.Identity.Name)
-                                    </button>
-                                </form>
-                            </li>
                         </ul>
+                    </div>
+                    <div class="">
+                        <div class="dropdown">
+                                 <button class="btn btn-link dropdown-toggle text-dark text-decoration-none"
+                                         type="button"
+                                         id="userMenuButton"
+                                         data-bs-toggle="dropdown"
+                                         aria-expanded="false">
+                                         User Menu
+                                 </button>
+                            
+                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuButton">
+                                     <li>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="UserSettings">Settings</a>
+                                     </li>
+                                     <li><hr class="dropdown-divider"></li>
+                                     <li>
+                                         <form asp-controller="Account" asp-action="Logout" method="post">
+                                             <button type="submit" class="dropdown-item">Logout</button>
+                                         </form>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </nav>

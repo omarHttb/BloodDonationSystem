@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_UserMenuLayout";
+
+}
+@model BloodDonationSystem.Models.User
+
+
+
+<form asp-controller="Account" asp-action="UpdateUserSettings" method="post">
+    <div class="UpdateContainer" style="height:auto">
+        <h3 class="d-flex justify-content-center  w-100">Update your account here </h3>
+        <label>Username</label>
+        <input asp-for="Name" type="text" name="Name" class="update-input" placeholder="Username" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+        <label>Email</label>
+        <input asp-for="Email" type="text" name="Email" class="update-input" placeholder="Email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+        <label>Phone Number</label>
+        <input asp-for="PhoneNumber" type="text" name="PhoneNumber" class="update-input" placeholder="Phone Number" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        <button type="submit" class="btn btn-primary">
+            Update
+        </button>
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        }
+    </div>
+</form>

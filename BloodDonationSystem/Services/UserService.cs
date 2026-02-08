@@ -48,13 +48,27 @@ namespace BloodDonationSystem.Services
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null) return null;
 
-            bool userExists = await _context.Users
-                .AnyAsync(u => u.Name.ToLower() == User.Name.ToLower() && u.Id != User.Id);
-            if (userExists)
+            bool userNameExists = await _context.Users
+                .AnyAsync(u => u.Name.ToLower() == User.Name.ToLower() && u.Id != id);
+            if (userNameExists)
             {
                 return null;
             }
-            existingUser.password = User.password;
+            bool EmailExist = await _context.Users
+                .AnyAsync(u => u.Email.ToLower() == User.Email.ToLower() && u.Id != id);
+            if (EmailExist)
+            {
+                return null;
+            }
+            bool PhoneNumberExist = await _context.Users
+                .AnyAsync(u => u.PhoneNumber == User.PhoneNumber && u.Id != id);
+            if (PhoneNumberExist)
+            {
+                return null;
+            }
+            
+            existingUser.Email = User.Email;
+            existingUser.PhoneNumber = User.PhoneNumber;
             existingUser.Name = User.Name;
 
             await _context.SaveChangesAsync();

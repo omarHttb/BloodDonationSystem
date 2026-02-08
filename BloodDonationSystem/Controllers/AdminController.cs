@@ -20,7 +20,7 @@ namespace BloodDonationSystem.Controllers
             _donationService = donationService;
 
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult Admin()
         {
             return View();

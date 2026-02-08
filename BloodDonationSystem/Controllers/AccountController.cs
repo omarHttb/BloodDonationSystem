@@ -89,14 +89,14 @@ namespace BloodDonationSystem.Controllers
             TempData["PendingUser"] = System.Text.Json.JsonSerializer.Serialize(user);
 
             return RedirectToAction("RegisterOTP");
- 
-            
+
+
         }
 
-        
+
         public async Task<IActionResult> RegisterOTP()
         {
-           var otp = await _otpService.GenerateOtpAsync();
+            var otp = await _otpService.GenerateOtpAsync();
             return View("RegisterOTP", otp);
         }
 
@@ -144,7 +144,7 @@ namespace BloodDonationSystem.Controllers
                 Response.Cookies.Append("X-Access-Token", token, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true, 
+                    Secure = true,
                     SameSite = SameSiteMode.Lax,
                     Expires = DateTime.UtcNow.AddHours(8)
                 });
@@ -162,13 +162,56 @@ namespace BloodDonationSystem.Controllers
             return View();
         }
 
-        [HttpPost] 
+        [HttpPost]
         public IActionResult Logout()
         {
             Response.Cookies.Delete("X-Access-Token");
 
 
             return RedirectToAction("Login");
+        }
+
+
+        public IActionResult UserSettings()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+             
+            var user =  _userService.GetUserByIdAsync(int.Parse(userId)).Result;
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+            return View(user);
+        }
+
+        public IActionResult ChangeUserPassword()
+        {
+           var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return View();
+        }
+
+
+        public IActionResult UserDonationHistory()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUserSettings(User user)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var UpdatedUser = await _userService.UpdateUserAsync(int.Parse(userId), user);
+
+            if (UpdatedUser == null)
+            {
+                ModelState.AddModelError("", "Failed to update user settings maybe there is a duplicate.");
+                return View("UserSettings");
+            }
+            return View("UserSettings", UpdatedUser);
         }
     }
 }

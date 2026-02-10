@@ -30,142 +30,146 @@ namespace BloodDonationSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> initAppTask(string connectionString) {
-
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
-            var json = System.IO.File.ReadAllText(filePath);
-
-            var configObject = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-            var connStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(configObject["ConnectionStrings"].ToString());
-
-            connStrings["DefaultConnection"] = connectionString;
-
-            configObject["ConnectionStrings"] = connStrings;
-
-            var updatedJson = JsonSerializer.Serialize(configObject, new JsonSerializerOptions { WriteIndented = true });
-
-            System.IO.File.WriteAllText(filePath, updatedJson);
-
-            if (await _context.Database.CanConnectAsync())
-            {
-                ModelState.AddModelError("", "Database already exist, maybe try changing database name in connection string");
-                return View("initApp");
-
-            }
-
-            if (connectionString.IsNullOrEmpty())
+        public async Task<IActionResult> InitAppTask(string connectionString)
+        {
+            if (string.IsNullOrEmpty(connectionString))
             {
                 ModelState.AddModelError("", "You have to add a connection string first");
-                return View("initApp"); 
+                return View("initApp");
             }
 
-   
-
-
-            // 1. Ensure the Database is created and migrations are applied
-            // This creates the DB file/tables if they don't exist yet.
-            await _context.Database.MigrateAsync();
-
-            bool dataAdded = false;
-
-            if (!await _context.BloodType.AnyAsync())
+            // 1. Update appsettings.json
+            try
             {
-                var bloodTypes = new List<BloodType>
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
+                var json = await System.IO.File.ReadAllTextAsync(filePath);
+                var configObject = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                var connStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(configObject["ConnectionStrings"].ToString());
+                connStrings["DefaultConnection"] = connectionString;
+                configObject["ConnectionStrings"] = connStrings;
+
+                var updatedJson = JsonSerializer.Serialize(configObject, new JsonSerializerOptions { WriteIndented = true });
+                await System.IO.File.WriteAllTextAsync(filePath, updatedJson);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Failed to update config: {ex.Message}");
+                return View("initApp");
+            }
+
+            // 2. Use a FRESH context with the NEW connection string
+            // This bypasses the DI context which is still stuck on the old string
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            // Change .UseSqlServer to your specific provider (Sqlite, Npgsql, etc.)
+            optionsBuilder.UseSqlServer(connectionString);
+
+            using (var context = new AppDbContext(optionsBuilder.Options))
+            {
+                try
                 {
-                new BloodType { BloodTypeName = "A+" },
-                new BloodType { BloodTypeName = "A-" },
-                new BloodType { BloodTypeName = "B+" },
-                new BloodType { BloodTypeName = "B-" },
-                new BloodType { BloodTypeName = "AB+" },
-                new BloodType { BloodTypeName = "AB-" },
-                new BloodType { BloodTypeName = "O+" },
-                new BloodType { BloodTypeName = "O-" }
-                };
+                    // Apply Migrations
+                    await context.Database.MigrateAsync();
 
-                await _context.BloodType.AddRangeAsync(bloodTypes);
-                dataAdded = true;
-            }
+                    // --- SEEDING LOGIC ---
 
-            if (!await _context.BloodBanks.AnyAsync())
-            {
-                var bloodBanks = new List<BloodBank>
+                    // 1. Seed BloodTypes (Save immediately so IDs exist for BloodBanks)
+                    if (!await context.BloodType.AnyAsync())
+                    {
+                        var bloodTypes = new List<BloodType>
                 {
-                 new BloodBank {   BloodTypeId =  _context.BloodType.First(b => b.BloodTypeName == "A+").Id , quantity = 5},
-                 new BloodBank {   BloodTypeId =  _context.BloodType.First(b => b.BloodTypeName == "A-").Id , quantity = 5},
-                 new BloodBank {   BloodTypeId =  _context.BloodType.First(b => b.BloodTypeName == "O+").Id , quantity = 5},
-                 new BloodBank {   BloodTypeId =  _context.BloodType.First(b => b.BloodTypeName == "O-").Id, quantity = 5},
-                 new BloodBank {   BloodTypeId =  _context.BloodType.First(b => b.BloodTypeName == "B+").Id ,quantity = 5},
-                 new BloodBank {   BloodTypeId =  _context.BloodType.First(b => b.BloodTypeName == "B-").Id,quantity = 5 },
-                 new BloodBank {   BloodTypeId =  _context.BloodType.First(b => b.BloodTypeName == "AB+").Id ,quantity = 5},
-                 new BloodBank {   BloodTypeId =  _context.BloodType.First(b => b.BloodTypeName == "AB-").Id ,quantity = 5}
+                    new BloodType { BloodTypeName = "A+" }, new BloodType { BloodTypeName = "A-" },
+                    new BloodType { BloodTypeName = "B+" }, new BloodType { BloodTypeName = "B-" },
+                    new BloodType { BloodTypeName = "AB+" }, new BloodType { BloodTypeName = "AB-" },
+                    new BloodType { BloodTypeName = "O+" }, new BloodType { BloodTypeName = "O-" }
                 };
+                        await context.BloodType.AddRangeAsync(bloodTypes);
+                        await context.SaveChangesAsync();
+                    }
 
-                await _context.BloodBanks.AddRangeAsync(bloodBanks);
+                    // 2. Seed BloodBanks (Now we can safely query IDs)
+                    if (!await context.BloodBanks.AnyAsync())
+                    {
+                        var types = await context.BloodType.ToListAsync();
+                        var bloodBanks = types.Select(t => new BloodBank
+                        {
+                            BloodTypeId = t.Id,
+                            quantity = 5
+                        }).ToList();
 
-            }
+                        await context.BloodBanks.AddRangeAsync(bloodBanks);
+                    }
 
-            if (!await _context.Roles.AnyAsync())
-            {
-                var roles = new List<Role>
+                    // 3. Seed Roles
+                    if (!await context.Roles.AnyAsync())
+                    {
+                        var roles = new List<Role>
                 {
                     new Role { Id = 1, RoleName = "Donor" },
                     new Role { Id = 2, RoleName = "Admin" },
                     new Role { Id = 3, RoleName = "Hospital" }
                 };
 
-                using (var transaction = await _context.Database.BeginTransactionAsync())
+                        using var transaction = await context.Database.BeginTransactionAsync();
+                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Roles ON");
+                        await context.Roles.AddRangeAsync(roles);
+                        await context.SaveChangesAsync();
+                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Roles OFF");
+                        await transaction.CommitAsync();
+                    }
+
+                    // 4. Seed Statuses
+                    if (!await context.Status.AnyAsync())
+                    {
+                        var statuses = new List<Status>
                 {
-                    // Explicitly allow manual ID insertion
-                    await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Roles ON");
+                    new Status { Id = 1, StatusName = "Completed" },
+                    new Status { Id = 2, StatusName = "Pending" },
+                    new Status { Id = 3, StatusName = "Cancelled" },
+                    new Status { Id = 4, StatusName = "Rejected" },
+                    new Status { Id = 5, StatusName = "Approved" }
+                };
 
-                    await _context.Roles.AddRangeAsync(roles);
-                    await _context.SaveChangesAsync();
+                        using var transaction = await context.Database.BeginTransactionAsync();
+                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Status ON");
+                        await context.Status.AddRangeAsync(statuses);
+                        await context.SaveChangesAsync();
+                        await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Status OFF");
+                        await transaction.CommitAsync();
+                    }
 
-                    await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Roles OFF");
-                    await transaction.CommitAsync();
+                    // 5. Final Save for anything pending
+                    await context.SaveChangesAsync();
+
+                    // 6. Seed Admin via Service (if service is registered)
+                    if (!await context.Users.AnyAsync())
+                    {
+                        var adminUser = new User
+                        {
+                            Name = "admin",
+                            Email = "admin@hospital.com",
+                            password = BCrypt.Net.BCrypt.HashPassword("123"),
+                            PhoneNumber = "1234567890"
+                        };
+
+                        // Note: _userService might still use the OLD connection string.
+                        // It's safer to create the user directly in the 'context' here.
+                        await context.Users.AddAsync(adminUser);
+                        await context.SaveChangesAsync();
+
+                        var adminRole = new UserRole { RoleId = 2, UserId = adminUser.Id };
+                        await context.UserRoles.AddAsync(adminRole);
+                        await context.SaveChangesAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Database Setup Failed: {ex.Message}");
+                    return View("initApp");
                 }
             }
 
-            if (!await _context.Status.AnyAsync())
-            {
-                var Statuses = new List<Status>
-                {
-                    new Status { Id = 1, StatusName="Completed" },
-                    new Status { Id = 2, StatusName="Pending" },
-                    new Status { Id = 3, StatusName="Cancelled" },
-                    new Status { Id = 4, StatusName="Rejected" },
-                    new Status { Id = 5, StatusName="Approved" },
-                };
-            }
-
-
-            // 3. Seed Users (Initial Admin)
-            if (!await _context.Users.AnyAsync())
-            {
-                var adminUser = new User
-                {
-                    Name = "admin",
-                    Email = "admin@hospital.com",
-                    password = "123", // In real apps, ensure this is hashed!
-                    PhoneNumber = "1234567890"
-                };
-
-               var userId = await _userService.RegisterUserAsync(adminUser);
-
-                await _roleService.CreateUserRoleAsync(new UserRole { RoleId=2,UserId =userId});
-                
-                dataAdded = true;
-            }
-
-            
-            if (dataAdded)
-            {
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Account", "Login");
-            }
-
-            return RedirectToAction("Account", "Login");
+            return RedirectToAction("Login", "Account");
         }
-
     }
 }

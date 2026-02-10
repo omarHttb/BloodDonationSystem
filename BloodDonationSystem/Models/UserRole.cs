@@ -12,5 +12,7 @@
 
         public User User { get; set; }
 
+        public DateTime? RoleAssignDate { get; set; }
+
     }
 }

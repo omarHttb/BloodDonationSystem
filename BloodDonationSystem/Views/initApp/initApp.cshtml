@@ -16,8 +16,13 @@
       asp-action="initAppTask"
       method="post"
       style="display:inline">
-  
-        <button type="submit" class="btn btn-sm btn-primary" )>
+
+      <h1>Add your connection string here</h1>
+    <input type="text" class="form-control w-100" name="connectionString"  placeholder="Enter Connection string">
+
+        <button type="submit" class="btn btn-sm btn-primary w-100 fs-5 mt-3" )>
             Initialize app
         </button>
 </form>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>

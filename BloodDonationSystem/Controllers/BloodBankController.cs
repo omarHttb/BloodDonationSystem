@@ -14,8 +14,7 @@ namespace BloodDonationSystem.Controllers
             _bloodBankService = bloodBankService;
         }
 
-        [Authorize(Roles = "Admin")] 
-        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Admin, Hospital")]
         public async Task<IActionResult> BloodBank()
         {
 
@@ -25,8 +24,7 @@ namespace BloodDonationSystem.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Admin, Hospital")]
 
         public async Task<IActionResult> TakeFromBloodBank(int BloodBankId, int quantityTaken)
         {

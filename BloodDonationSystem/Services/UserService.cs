@@ -121,25 +121,29 @@ namespace BloodDonationSystem.Services
 
         public async Task<List<UserListViewDTO>> GetAllUsersWithDetailsAsync()
         {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
             var users = await _context.Users
                 .Select(u => new UserListViewDTO
                 {
                     Id = u.Id,
-                    Username = u.Name, // Ensure this matches your Entity property (e.g., UserName)
+                    Username = u.Name,
                     Email = u.Email,
                     PhoneNumber = u.PhoneNumber,
 
-                    // FIX 1: Handle nulls safely for Blood Type Name
                     BloodType = (u.Donors != null && u.Donors.BloodType != null)
                                 ? u.Donors.BloodType.BloodTypeName
                                 : "N/A",
 
-                    // FIX 2: Populate the ID so the Modal knows which option to select
                     bloodTypeId = (u.Donors != null && u.Donors.BloodType != null)
                                   ? u.Donors.BloodType.Id
                                   : 0,
 
-                    // FIX 3: Check for null before accessing IsAvailable
+                    UserAge = u.DateOfBirth.HasValue
+                        ? today.DayNumber - u.DateOfBirth.Value.DayNumber
+                        : 0,
+                    UserCreationDate = u.UserCreationDate,
+
                     isUserAvailableToDonate = (u.Donors != null) ? u.Donors.IsAvailable : false,
 
                     isUserAdoner = u.Donors != null,

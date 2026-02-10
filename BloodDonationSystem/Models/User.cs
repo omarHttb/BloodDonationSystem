@@ -19,6 +19,10 @@ namespace BloodDonationSystem.Models
 
         public string? PhoneNumber { get; set; }
 
+       public DateOnly? DateOfBirth { get; set; }
+
+       public DateTime? UserCreationDate { get; set; } = DateTime.Now;
+
         public ICollection<UserRole> UserRoles { get; set; }
         public Donor Donors { get; set; }
 

@@ -18,10 +18,7 @@ namespace BloodDonationSystem.Controllers
             _logger = logger;
             _donorService = donorService;
         }
-
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -37,9 +34,7 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public async Task<IActionResult> CreateDonor(Donor donor)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -55,26 +50,20 @@ namespace BloodDonationSystem.Controllers
 
             return View("Index");
         }
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public IActionResult Privacy()
         {
             return View();
         }
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
-        [HttpPost]
 
+        [Authorize(Roles = "Admin, Hospital, Donor")]
+        [HttpPost]
         public async Task<IActionResult> SetDonorToAvailable()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -90,9 +79,8 @@ namespace BloodDonationSystem.Controllers
             await _donorService.UpdateDonorToAvailable(donor);
             return RedirectToAction("Index");
         }
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public async Task<IActionResult> SetDonorToUnAvailable()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -110,6 +98,8 @@ namespace BloodDonationSystem.Controllers
             await _donorService.UpdateDonorToUnAvailable(donor);
             return RedirectToAction("Index");
         }
+
+       
 
     }
 }

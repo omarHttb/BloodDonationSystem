@@ -1,10 +1,15 @@
-﻿using BloodDonationSystem.Models;
+﻿using BloodDonationSystem.Data;
+using BloodDonationSystem.Models;
 using BloodDonationSystem.Services;
 using BloodDonationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+
+
 
 namespace BloodDonationSystem.Controllers
 {
@@ -14,22 +19,25 @@ namespace BloodDonationSystem.Controllers
         private readonly IUserRoleService _userRoleService;
         private readonly IOtpService _otpService;
         private readonly TokenService _tokenService;
-        public AccountController(IUserService userService, IUserRoleService userRoleService, IOtpService otpService, TokenService tokenService)
+        private readonly AppDbContext _appDbContext;
+        public AccountController(IUserService userService, IUserRoleService userRoleService, IOtpService otpService, 
+            TokenService tokenService, AppDbContext appDbContext)
         {
             _userService = userService;
             _userRoleService = userRoleService;
             _otpService = otpService;
             _tokenService = tokenService;
+            _appDbContext = appDbContext;
         }
         public IActionResult Register()
         {
             return View();
         }
-        public async Task< IActionResult> Login()
+        public async Task< IActionResult> Login()   
         {
-           var doUsersExist =  await _userService.doUsersExist();
+            bool dbExists = await _appDbContext.Database.CanConnectAsync();
 
-            if(doUsersExist == false)
+            if (dbExists == false)
             {  
                return RedirectToAction("InitApp", "InitApp");
             }
@@ -59,40 +67,61 @@ namespace BloodDonationSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterAccount(User user)
         {
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+            DateOnly eighteenYearsAgo = today.AddYears(-18);
 
             if (user.PhoneNumber.IsNullOrEmpty())
             {
                 ModelState.AddModelError("PhoneNumber", "Phone Number is Required.");
+                return View();
+
 
             }
             else if (await _userService.IsPhoneNumberExist(user.PhoneNumber))
             {
                 ModelState.AddModelError("PhoneNumber", "This phone number is already taken.");
+                return View("Register");
+
             }
             if (user.Email.IsNullOrEmpty())
             {
                 ModelState.AddModelError("Email", "Email is Required.");
+                return View("Register");
+
 
             }
             else if (await _userService.IsEmailExist(user.Email))
             {
                 ModelState.AddModelError("PhoneNumber", "This Email is already taken.");
+                return View("Register");
+
             }
 
             if (user.Name.IsNullOrEmpty())
             {
                 ModelState.AddModelError("Name", "Username is Required.");
+                return View("Register");
+
 
             }
             else if (await _userService.IsUsernameExist(user.Name))
             {
                 ModelState.AddModelError("Name", "This Username is already taken.");
+                return View("Register");
 
             }
-
-
+            if (user.DateOfBirth == null || !user.DateOfBirth.HasValue || user.DateOfBirth == DateOnly.MinValue)
+            {
+                ModelState.AddModelError("DateOfBirth", "This Username is already taken.");
+                return View("Register");
+            }
+            else if (user.DateOfBirth > eighteenYearsAgo)
+            {
+                ModelState.AddModelError("DateOfBirth", "User is younger than 18.");
+                return View("Register");
+            }
             // Store the user object as a JSON string in TempData
-            TempData["PendingUser"] = System.Text.Json.JsonSerializer.Serialize(user);
+                TempData["PendingUser"] = System.Text.Json.JsonSerializer.Serialize(user);
 
             return RedirectToAction("RegisterOTP");
 
@@ -107,6 +136,7 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
+
         public async Task<IActionResult> VerifyRegisterOTP(string userEnteredOtp)
         {
             // 1. Validate the OTP via your service
@@ -169,6 +199,7 @@ namespace BloodDonationSystem.Controllers
         }
 
         [HttpPost]
+
         public IActionResult Logout()
         {
             Response.Cookies.Delete("X-Access-Token");
@@ -177,7 +208,7 @@ namespace BloodDonationSystem.Controllers
             return RedirectToAction("Login");
         }
 
-
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public IActionResult UserSettings()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -189,7 +220,7 @@ namespace BloodDonationSystem.Controllers
             }
             return View(user);
         }
-
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public IActionResult ChangeUserPassword()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -197,7 +228,7 @@ namespace BloodDonationSystem.Controllers
             return View();
         }
 
-
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public async Task<IActionResult> UserDonationHistory()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -207,6 +238,7 @@ namespace BloodDonationSystem.Controllers
             return View(donationHistory);
         }
 
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         [HttpPost]
         public async Task<IActionResult> UpdateUserSettings(User user)
         {
@@ -222,6 +254,7 @@ namespace BloodDonationSystem.Controllers
             return View("UserSettings", UpdatedUser);
         }
 
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         [HttpPost]
         public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string ConfirmPassword)
         {

@@ -32,7 +32,7 @@
                     <select name="BloodTypeId"
                             asp-items="@(Model.bloodTypes.Select(bt => new SelectListItem { 
                                 Value = bt.Id.ToString(), 
-                                Text = bt.BloodTypeName 
+                                Text = bt.BloodTypeName
                             }))"
                             onchange="this.form.submit()"
                             class="form-control">

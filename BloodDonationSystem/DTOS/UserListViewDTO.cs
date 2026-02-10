@@ -21,6 +21,10 @@ namespace BloodDonationSystem.DTOS
 
         public string PhoneNumber { get; set; }
 
+        public int? UserAge { get; set; }
+
+        public DateTime? UserCreationDate { get; set; }
+
         public bool isUserAvailableToDonate { get; set; }
 
     }

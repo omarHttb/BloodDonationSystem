@@ -13,8 +13,7 @@ namespace BloodDonationSystem.Controllers
             _donorService = donorService;
         }
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Admin, Hospital")]
 
         public async Task<IActionResult> Donors()
         {
@@ -24,8 +23,7 @@ namespace BloodDonationSystem.Controllers
             return View(donors);
         }
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Admin, Hospital")]
 
         public async Task<IActionResult> AvailableDonors()
         {
@@ -35,9 +33,7 @@ namespace BloodDonationSystem.Controllers
             return View(Availabledonors);
         }
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-
+        [Authorize(Roles = "Admin, Hospital")]
         public async Task<IActionResult> UpdateBloodType(int DonorId, int BloodTypeId)
         {
 

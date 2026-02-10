@@ -43,6 +43,7 @@ namespace BloodDonationSystem.Services
             var rolesToRemove = currentRoles.Where(ur => !roleIds.Contains(ur.RoleId)).ToList();
             if (rolesToRemove.Any())
             {
+                
                 _context.UserRoles.RemoveRange(rolesToRemove);
             }
 
@@ -51,9 +52,10 @@ namespace BloodDonationSystem.Services
             var rolesToAdd = roleIds
                 .Where(id => !existingRoleIds.Contains(id))
                 .Select(id => new UserRole
-                {
+                {                  
                     UserId = userId,
-                    RoleId = id
+                    RoleId = id,
+                    RoleAssignDate = DateTime.Now,
                 }).ToList();
 
             if (rolesToAdd.Any())

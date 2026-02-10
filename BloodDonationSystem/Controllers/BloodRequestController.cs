@@ -29,8 +29,7 @@ namespace BloodDonationSystem.Controllers
             _bloodCompatibilityService = bloodCompatibilityService;
         }
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Admin, Hospital")]
         private async Task<CreateBloodRequestDTO> BloodRequestManagementPageDTO()
         {
             var sourceData = await _bloodRequestService.GetAllBloodRequestWithBloodTypesAsync();
@@ -60,9 +59,7 @@ namespace BloodDonationSystem.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-
+        [Authorize(Roles = "Admin, Hospital")]
         public async Task<IActionResult> BloodRequestManagement()
         {
 
@@ -73,9 +70,7 @@ namespace BloodDonationSystem.Controllers
         }
         [HttpPost]
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-
+        [Authorize(Roles = "Admin, Hospital")]
         public async Task<IActionResult> CreateBloodRequest(CreateBloodRequestDTO bloodrequest)
         {
             var viewModel = new object();
@@ -115,8 +110,7 @@ namespace BloodDonationSystem.Controllers
 
         [HttpPost]
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Admin, Hospital")]
 
         public async Task<IActionResult> Activate(int id)
         {
@@ -144,9 +138,7 @@ namespace BloodDonationSystem.Controllers
             return View("BloodRequestManagement", viewModel);
         }
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public async Task<IActionResult> ApprovedBloodRequests(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -175,9 +167,7 @@ namespace BloodDonationSystem.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public async Task<IActionResult> CreateDonationRequest(int BloodRequestId,string patientBloodType, DateOnly WhenUserWantToDonate)
         {
             var approvedBloodRequestDTO = new object();
@@ -229,9 +219,7 @@ namespace BloodDonationSystem.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public async Task<IActionResult> CancelDonation( int BloodRequestId)
         {
 
@@ -247,9 +235,8 @@ namespace BloodDonationSystem.Controllers
 
 
         }
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-        [Authorize(Roles = "Donor")]
+
+        [Authorize(Roles = "Admin, Hospital, Donor")]
         public async Task<IActionResult> ReactivateDonation(int BloodRequestId)
         {
 

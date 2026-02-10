@@ -15,9 +15,7 @@ namespace BloodDonationSystem.Controllers
             _donationService = donationService;
         }
 
-
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
+        [Authorize(Roles = "Admin, Hospital")]
 
         public async Task< IActionResult> Donations()
         {
@@ -28,9 +26,7 @@ namespace BloodDonationSystem.Controllers
 
         [HttpPost]
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Hospital")]
-
+        [Authorize(Roles = "Admin, Hospital")]
         public async Task<IActionResult> CompleteDonation(int donationId, int quantityDonated, int quantityNeeded)
         {
             var donation = await _donationService.GetDonationByIdAsync(donationId);

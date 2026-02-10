@@ -185,12 +185,13 @@ namespace BloodDonationSystem.Controllers
                 PhoneNumber = phoneNumber,
             };
             await _userService.UpdateUserAsync(Id, updatedUser);
-
-            if (await _donorService.IsUserAdoner(Id) == true)
+            
+            var donor = await _donorService.GetDonorByUserIdAsync(Id);
+            if (donor != null)
             {
-               await _donorService.UpdateDonorBloodType(Id, bloodTypeId);
+               await _donorService.UpdateDonorBloodType(donor.Id, bloodTypeId);
 
-                await _donorService.setDonorAvailability(isAvailable, Id);
+                await _donorService.setDonorAvailability(isAvailable, donor.Id);
             }
 
 

@@ -140,8 +140,8 @@ namespace BloodDonationSystem.Services
                                   : 0,
 
                     UserAge = u.DateOfBirth.HasValue
-                        ? today.DayNumber - u.DateOfBirth.Value.DayNumber
-                        : 0,
+                  ? today.Year - u.DateOfBirth.Value.Year
+                  : 0,
                     UserCreationDate = u.UserCreationDate,
 
                     isUserAvailableToDonate = (u.Donors != null) ? u.Donors.IsAvailable : false,

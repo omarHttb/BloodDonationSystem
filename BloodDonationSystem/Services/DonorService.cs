@@ -110,12 +110,15 @@ namespace BloodDonationSystem.Services
 
         public async Task<bool> UpdateDonorBloodType(int donorId, int bloodTypeId)
         {
-          await  _context.Donors
-                .Where(d => d.Id == donorId)
-                .ExecuteUpdateAsync(d => d.SetProperty(donor => donor.BloodTypeId, bloodTypeId));
-            return await Task.FromResult(true);
-        }
 
+            // Capture the number of rows updated
+            int rowsAffected = await _context.Donors
+                .Where(d => d.Id == donorId)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.BloodTypeId, bloodTypeId));
+
+            // Return true only if a record was actually found and updated
+            return rowsAffected > 0;
+        }
         public async Task<bool> UpdateDonorToAvailable(Donor donor)
         {
             donor.IsAvailable = true;
@@ -151,20 +154,14 @@ namespace BloodDonationSystem.Services
             return await _context.Donors.AnyAsync(d => d.UserId == userId);
         }
 
-        public async Task<bool> setDonorAvailability(bool availability,int userId)
+        public async Task<bool> setDonorAvailability(bool availability,int donerId)
         {
-          var donor =   await _context.Donors.FirstOrDefaultAsync(d => d.UserId == userId);
+            int rowsAffected = await _context.Donors
+            .Where(d => d.Id == donerId)
+            .ExecuteUpdateAsync(s => s.SetProperty(d => d.IsAvailable, availability));
 
-            if (donor == null)
-            {
-                donor.IsAvailable = availability;
-                await _context.SaveChangesAsync();
+            return rowsAffected > 0;
 
-                return true;
-            }
-
-
-            return false;
         }
     }
 }

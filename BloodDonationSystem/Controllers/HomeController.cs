@@ -48,8 +48,9 @@ namespace BloodDonationSystem.Controllers
 
             await _donorService.CreateDonorAsync(donor);
 
-            return View("Index");
+            return RedirectToAction("Index");
         }
+
         [Authorize(Roles = "Admin, Hospital, Donor")]
         public IActionResult Privacy()
         {

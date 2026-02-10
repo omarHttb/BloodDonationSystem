@@ -170,6 +170,7 @@ namespace BloodDonationSystem.Services
                .Select(d => new DonationsWithBloodRequestAndDonorDTO
                {
                    DonationId = d.Id,
+                   DonatorId = d.DonorId,
                    BloodRequestId = d.BloodRequestId,
                    RequestedBloodType = d.BloodRequest.BloodType.BloodTypeName,
                    DonatorName = d.Donor.User.Name,
@@ -204,6 +205,12 @@ namespace BloodDonationSystem.Services
             }
 
             return true;
+        }
+
+        public async Task<Donation> GetDonationByBloodRequestIdAndDonorIdAsync(int bloodRequestId, int donorId)
+        {
+            return await _context.Donations.FirstOrDefaultAsync(d => d.BloodRequestId == bloodRequestId && d.DonorId == donorId);
+
         }
     }
 }

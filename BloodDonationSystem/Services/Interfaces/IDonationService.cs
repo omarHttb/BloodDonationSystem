@@ -10,7 +10,10 @@ namespace BloodDonationSystem.Services.Interfaces
 
         Task<List<DonationsWithBloodRequestAndDonorDTO>> GetAllDonationsWithBloodRequestAndDonor();
 
+        Task<Donation> GetDonationByBloodRequestIdAndDonorIdAsync(int bloodRequestId, int donorId);
+
         Task<Donation> GetDonationByBloodRequestIdAsync(int bloodRequestId);
+
         Task<bool> CancelDonation(Donation donation);
         Task<bool> CompleteDonation(Donation donation);
         Task<bool> RejectDonation(Donation donation);

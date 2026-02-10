@@ -102,13 +102,11 @@ namespace BloodDonationSystem.Services
             return true;
         }
 
-        public async Task<BloodRequestToSubmitDTO> GetAllApprovedBloodRequest(int UserId)
+        public async Task<BloodRequestToSubmitDTO> GetAllApprovedBloodRequest(Donor donorRecord)
         {
             var response = new BloodRequestToSubmitDTO();
 
-            var donorRecord = await _context.Donors
-                                            .Include(d => d.BloodType)
-                                            .FirstOrDefaultAsync(x => x.UserId == UserId);
+           
             Donation? lastDonation = null;
             bool isDonor = donorRecord != null;
             bool doesUserHaveBloodType = donorRecord != null && donorRecord.BloodTypeId != null;

@@ -9,7 +9,7 @@ namespace BloodDonationSystem.Services.Interfaces
         Task<BloodRequest> GetBloodRequestByIdAsync(int id);
         Task<List<BloodRequest>> GetAllBloodRequestWithBloodTypesAsync();
 
-        Task<BloodRequestToSubmitDTO> GetAllApprovedBloodRequest(int userId);
+        Task<BloodRequestToSubmitDTO> GetAllApprovedBloodRequest(Donor donorRecord);
 
         Task<int> TotalNumberOfBloodRequests();
         Task<List<BloodRequest>> GetAllBloodRequestAsnyc();

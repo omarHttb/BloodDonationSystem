@@ -135,13 +135,13 @@ namespace BloodDonationSystem.Controllers
         }
         [Authorize(Roles = "Admin")]
 
-        public async Task<IActionResult> RejectDonation(int BloodRequestId)
+        public async Task<IActionResult> RejectDonation(int BloodRequestId,int donorId)
         {
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 
-            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+            var donation = await _donationService.GetDonationByBloodRequestIdAndDonorIdAsync(BloodRequestId, donorId);
 
             await _donationService.RejectDonation(donation);
 
@@ -153,13 +153,13 @@ namespace BloodDonationSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ApproveDonation(int BloodRequestId)
+        public async Task<IActionResult> ApproveDonation(int BloodRequestId, int donorId)
         {
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 
-            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+            var donation = await _donationService.GetDonationByBloodRequestIdAndDonorIdAsync(BloodRequestId, donorId);
 
             await _donationService.ApproveDonation(donation);
 

@@ -145,7 +145,7 @@ namespace BloodDonationSystem.Controllers
 
             var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
 
-            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(donor);
 
             if (donor == null)
             {
@@ -171,7 +171,7 @@ namespace BloodDonationSystem.Controllers
         public async Task<IActionResult> CreateDonationRequest(int BloodRequestId,string patientBloodType, DateOnly WhenUserWantToDonate)
         {
             var approvedBloodRequestDTO = new object();
-            var userId =  User.FindFirst("UserID")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
 
@@ -179,7 +179,7 @@ namespace BloodDonationSystem.Controllers
             {
                 ModelState.AddModelError("WhenUserWantToDonate", "You must pick a future date to donate");
 
-                approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+                approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(donor);
 
                 return View("ApprovedBloodRequests", approvedBloodRequestDTO);
 
@@ -192,14 +192,13 @@ namespace BloodDonationSystem.Controllers
 
                 ModelState.AddModelError("BloodIncompatible", "Your blood type is not compatible with patient blood type,please check a blood donation guide");
 
-                approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+                approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(donor);
 
                 return View("ApprovedBloodRequests", approvedBloodRequestDTO);
             }
 
             var DonationRequest = new Donation
             {
-                //TODO : FIX DONATION REQUEST CREATION
 
                 DonorId = donor.Id,
                 StatusId = 2,
@@ -211,7 +210,7 @@ namespace BloodDonationSystem.Controllers
             };
             var createdDonationRequest = await _donationService.CreateDonationAsync(DonationRequest);
 
-             approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+             approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(donor);
 
             return View("ApprovedBloodRequests", approvedBloodRequestDTO);
 
@@ -220,16 +219,18 @@ namespace BloodDonationSystem.Controllers
 
 
         [Authorize(Roles = "Admin, Hospital, Donor")]
-        public async Task<IActionResult> CancelDonation( int BloodRequestId)
+        public async Task<IActionResult> CancelDonation(int BloodRequestId)
         {
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+            var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAndDonorIdAsync(BloodRequestId,donor.Id);
 
             await _donationService.CancelDonation(donation);
 
-            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(donor);
 
             return View("ApprovedBloodRequests", approvedBloodRequestDTO);
 
@@ -242,11 +243,13 @@ namespace BloodDonationSystem.Controllers
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var donation = await _donationService.GetDonationByBloodRequestIdAsync(BloodRequestId);
+            var donor = await _donorService.GetDonorByUserIdAsync(int.Parse(userId));
+
+            var donation = await _donationService.GetDonationByBloodRequestIdAndDonorIdAsync(BloodRequestId, donor.Id);
 
             await _donationService.ReactivateDonation(donation);
 
-            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(int.Parse(userId));
+            var approvedBloodRequestDTO = await _bloodRequestService.GetAllApprovedBloodRequest(donor);
 
             return View("ApprovedBloodRequests", approvedBloodRequestDTO);
 

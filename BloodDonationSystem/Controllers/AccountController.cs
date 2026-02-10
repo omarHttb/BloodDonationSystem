@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 
@@ -89,6 +90,11 @@ namespace BloodDonationSystem.Controllers
                 return View("Register");
 
 
+            }
+            else if (!new EmailAddressAttribute().IsValid(user.Email))
+            {
+                ModelState.AddModelError("Email", "Invalid Email Format.");
+                return View("Register");
             }
             else if (await _userService.IsEmailExist(user.Email))
             {

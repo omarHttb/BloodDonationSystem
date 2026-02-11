@@ -63,7 +63,7 @@ builder.Services.AddAuthentication(options =>
             context.HandleResponse();
 
             // Redirect the user to your login page
-            context.Response.Redirect("/Login/Index");
+            //context.Response.Redirect("/Login/Index");
 
             return Task.CompletedTask;
         },

@@ -23,13 +23,11 @@ namespace BloodDonationSystem.Controllers
             _userService = userService;
         }
 
-        [Authorize(Roles = "Admin")]
         public IActionResult initApp()
         {
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> InitAppTask(string connectionString)
         {
             if (string.IsNullOrEmpty(connectionString))

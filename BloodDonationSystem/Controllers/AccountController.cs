@@ -36,12 +36,7 @@ namespace BloodDonationSystem.Controllers
         }
         public async Task< IActionResult> Login()   
         {
-            bool dbExists = await _appDbContext.Database.CanConnectAsync();
-
-            if (dbExists == false)
-            {  
-               return RedirectToAction("InitApp", "InitApp");
-            }
+     
 
             return View("Login");
         }

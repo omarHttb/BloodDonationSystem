@@ -27,7 +27,7 @@ namespace BloodDonationSystem.Services
 
         public async Task<Donation> GetDonationByIdAsync(int id)
         {
-            return await _context.Donations.FindAsync(id);
+            return await _context.Donations.Include(d => d.Donor).Where(d => d.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<Donation> CreateDonationAsync(Donation Donation)
@@ -110,7 +110,7 @@ namespace BloodDonationSystem.Services
                 return false;
             }
 
-            var bloodBank = await _bloodBankService.GetBloodBankFromBloodTypeIdAsync(bloodRequest.BloodTypeId);
+            var bloodBank = await _bloodBankService.GetBloodBankFromBloodTypeIdAsync(donation.Donor.BloodTypeId.Value);
 
             await _bloodBankService.AddToBloodBank(bloodBank.Id, donation.Quantity);
 
